@@ -1,0 +1,15 @@
+// في football.js
+   const CACHE_TIME = 1000 * 60 * 5; // 5 دقائق
+   let lastFetch = 0;
+   let cachedData = null;
+
+   export const getMatches = async () => {
+     if (Date.now() - lastFetch < CACHE_TIME && cachedData) {
+       return cachedData;
+     }
+     
+     const data = await fetch('/data/matches.json').then(res => res.json());
+     lastFetch = Date.now();
+     cachedData = data.matches;
+     return cachedData;
+   };
