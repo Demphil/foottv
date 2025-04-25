@@ -144,3 +144,9 @@ if (typeof module !== 'undefined' && module.exports) {
 document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
     document.querySelector('.main-nav').classList.toggle('active');
 });
+fetch('matches.json')
+  .then(response => response.json())
+  .then(data => {
+    console.log(data.matches);
+    // عرض المباريات في الصفحة
+  });
