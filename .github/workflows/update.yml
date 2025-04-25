@@ -1,8 +1,11 @@
 name: Update Matches
 on:
   schedule:
-    - cron: '0 */6 * * *'  # كل 6 ساعات (تعدل حسب الحاجة)
-  workflow_dispatch:       # يسمح بالتشغيل اليدوي
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update:
@@ -10,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # ضروري لعمل git push
+          fetch-depth: 0
 
       - name: Fetch Data
         env:
-          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}  # ⚠️ تأكد من اسم السر
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: |
           curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
                "https://api.football-data.org/v4/matches" \
