@@ -3,171 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FootTv</title>
-    
-    <!-- الروابط الأساسية -->
+    <title>البث المباشر - بلوغر</title>
+    <link rel="stylesheet" href="assets/css/live.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-    
-    <!-- تنسيقات خاصة بالشاشة -->
-    <style>
-        /* تخصيصات إضافية للشاشة */
-        .live-screen {
-            background-color: #000;
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px 0;
-        }
-        
-        .screen-header {
-            background: linear-gradient(to right, #d10a11, #8c0000);
-            padding: 15px 0;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(209, 10, 17, 0.3);
-        }
-        
-        .match-card.live {
-            border: 2px solid #d10a11;
-            box-shadow: 0 0 20px rgba(209, 10, 17, 0.5);
-        }
-        
-        .live-timer {
-            font-size: 1.2rem;
-            color: #d10a11;
-            font-weight: bold;
-            text-align: center;
-            margin: 10px 0;
-        }
-        
-        .event-log {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .event-item {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-        }
-        
-        .event-item i {
-            margin-left: 10px;
-            color: #d10a11;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body class="live-screen">
-    <!-- شريط العنوان -->
-    <header class="screen-header">
+<body class="live-mode">
+    <!-- شريط التحكم العلوي -->
+    <header class="live-header">
         <div class="container">
-            <h1>
-                <i class="fas fa-tv"></i> شاشة المباريات المباشرة
-                <span class="live-badge">ON AIR</span>
-            </h1>
-            <div class="live-timer" id="live-timer">
-                الوقت الحالي: <span id="current-time">--:--:--</span> | 
-                آخر تحديث: <span id="update-time">--:--:--</span>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>العودة للرئيسية</span>
+            </a>
+            <div class="live-title">
+                <img src="assets/images/logo-white.png" alt="بلوغر">
+                <h1>القناة المباشرة</h1>
+            </div>
+            <div class="live-actions">
+                <button id="refresh-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>تحديث</span>
+                </button>
+                <span id="last-updated"></span>
             </div>
         </div>
     </header>
 
-    <!-- محتوى الشاشة الرئيسي -->
-    <main class="container">
-        <!-- قسم المباريات المباشرة -->
-        <section class="live-matches-section">
-            <div class="matches-grid" id="live-matches-container">
-                <!-- سيتم ملؤها بواسطة script.js -->
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل المباريات المباشرة...
+    <!-- المحتوى الرئيسي -->
+    <main class="live-main">
+        <div class="container">
+            <!-- قسم المباريات المباشرة -->
+            <section class="live-matches-section">
+                <div class="section-tabs">
+                    <button class="tab-btn active" data-tab="all">جميع المباريات</button>
+                    <button class="tab-btn" data-tab="popular">الأكثر متابعة</button>
+                    <button class="tab-btn" data-tab="league">حسب البطولات</button>
                 </div>
-            </div>
-        </section>
-        
-        <!-- سجل الأحداث -->
-        <section class="events-section">
-            <h2 class="section-title">
-                <i class="fas fa-list-alt"></i> سجل الأحداث
-            </h2>
-            <div class="event-log" id="event-log">
-                <div class="event-item">
-                    <i class="fas fa-info-circle"></i>
-                    <span>جاري تحميل الأحداث...</span>
+                
+                <div class="live-matches-grid" id="live-matches-container">
+                    <!-- سيتم تعبئتها بواسطة JavaScript -->
                 </div>
-            </div>
-        </section>
-        
-        <!-- إحصائيات النظام -->
-        <div class="stats">
-            <div class="stat-item">
-                <i class="fas fa-memory"></i>
-                استخدام الذاكرة: <span id="memory">--</span>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-network-wired"></i>
-                حالة الاتصال: <span id="connection-status">جيد <i class="fas fa-check-circle"></i></span>
-            </div>
+            </section>
+
+            <!-- قسم إحصائيات المباراة (تظهر عند اختيار مباراة) -->
+            <section class="match-details-section" id="match-details">
+                <div class="details-header">
+                    <h2 id="detail-match-title"></h2>
+                    <button class="close-details"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="details-content">
+                    <div class="match-stats">
+                        <!-- الإحصائيات -->
+                    </div>
+                    <div class="match-commentary">
+                        <!-- التعليق النصي -->
+                    </div>
+                </div>
+            </section>
         </div>
     </main>
-    <!-- الفوتر -->
-    <footer class="screen-footer">
+
+    <!-- شريط الحالة السفلية -->
+    <footer class="live-footer">
         <div class="container">
-            <p>© <span id="current-year"></span> فوت تي في - جميع الحقوق محفوظة</p>
-            <p id="refresh-notice">يتم تحديث البيانات تلقائياً كل 30 ثانية</p>
+            <div class="now-playing" id="now-playing">
+                <span>لا توجد مباراة قيد التشغيل</span>
+            </div>
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>مباشر</span>
+            </div>
         </div>
     </footer>
 
-    <!-- ملفات الجافاسكريبت -->
-    <script src="script.js"></script>
-    
-    <!-- كود خاص بالشاشة -->
-    <script>
-        // تحديث الوقت الحالي
-        function updateLiveClock() {
-            const now = new Date();
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('ar-EG');
-            document.getElementById('update-time').textContent = now.toLocaleTimeString('ar-EG');
-        }
-        
-        // تحديث السنة الحالية
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // بدء المؤقت
-        updateLiveClock();
-        setInterval(updateLiveClock, 1000);
-        
-        // محاكاة سجل الأحداث (يمكن استبدالها ببيانات حقيقية)
-        function simulateEvents() {
-            const events = [
-                { icon: "fa-futbol", text: "⚽️ هدف! أحمد فريج (النصر) الدقيقة 23'" },
-                { icon: "fa-yellow-card", text: "🟨 كرت أصفر لـ سيرجيو راموس الدقيقة 35'" },
-                { icon: "fa-whistle", text: "⏱️ نهاية الشوط الأول - النصر 1 - 0 الهلال" },
-                { icon: "fa-substitution", text: "🔄 تبديل: خروج سالم الدوسري - دخول أندرسون تاليسكا" }
-            ];
-            
-            const eventLog = document.getElementById('event-log');
-            eventLog.innerHTML = '';
-            
-            events.forEach(event => {
-                const eventItem = document.createElement('div');
-                eventItem.className = 'event-item';
-                eventItem.innerHTML = 
-                    <i class="fas ${event.icon}"></i>
-                    <span>${event.text}</span>
-                ;
-                eventLog.prepend(eventItem);
-            });
-        }
-        
-        // بدء المحاكاة بعد 3 ثواني
-        setTimeout(simulateEvents, 3000);
-    </script>
+    <!-- ستايلات الطوارئ إذا لم يتم تحميل CSS -->
+    <noscript>
+        <style>
+            body { font-family: Arial, sans-serif; background: #000; color: #fff; }
+            .container { padding: 20px; }
+            a { color: #4CAF50; }
+        </style>
+    </noscript>
+
+    <script src="assets/js/live.js" defer></script>
 </body>
 </html>
