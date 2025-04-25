@@ -17,11 +17,14 @@ jobs:
 
       - name: Fetch Data
         env:
-          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: |
-          curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
-               "https://api.football-data.org/v4/matches" \
-               > data/matches.json
+          TODAY=$(date -u +'%Y-%m-%d')
+          NEXT_WEEK=$(date -u -d "+7 days" +'%Y-%m-%d')
+    
+    curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
+      "https://api.football-data.org/v4/matches?dateFrom=$TODAY&dateTo=$NEXT_WEEK" \
+      > data/matches.json
 
       - name: Configure Git
         run: |
