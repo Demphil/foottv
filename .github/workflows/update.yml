@@ -25,3 +25,6 @@ jobs:
           git add data/matches.json
           git commit -m "Auto-update matches data" || echo "No changes"
           git push
+- name: Configure Git
+    run: |
+      git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
