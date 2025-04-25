@@ -3,139 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية - تابع أهم المباريات والملخصات وأحدث الأخبار">
-    <meta name="keywords" content="مباريات مباشرة, كرة قدم, أخبار كرة القدم, ملخصات مباريات, مشاهدة مباريات">
-    <meta name="author" content="موقع بلوغر الرياضي">
-    <meta property="og:title" content="بلوغر - البث المباشر للمباريات وأخبار كرة القدم">
-    <meta property="og:description" content="شاهد أهم المباريات المباشرة وملخصات المباريات وأحدث أخبار كرة القدم">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.example.com">
-    <meta property="og:image" content="https://www.example.com/images/logo.jpg">
-    <meta name="robots" content="index, follow">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>البث المباشر للمباريات وأخبار كرة القدم</title>
+    <meta name="description" content="موقع متخصص في متابعة المباريات المباشرة وأخبار كرة القدم">
+    <meta name="keywords" content="مباريات مباشرة, كرة قدم, أخبار رياضية">
+    <title>فوت تي في - البث المباشر للمباريات</title>
+    
+    <!-- الروابط الخارجية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- ملفات التنسيقات -->
     <link rel="stylesheet" href="style.css">
-  
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- بيانات Structured للسيو -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsOrganization",
+      "name": "فوت تي في",
+      "url": "https://demphi.github.io/foottv",
+      "logo": "https://demphi.github.io/foottv/assets/logo.png",
+      "description": "موقع متخصص في بث المباريات المباشرة"
+    }
+    </script>
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="header">
+    <!-- الهيدر -->
+    <header class="main-header">
         <div class="container">
             <div class="logo">
                 <a href="index.html">
-                    <img src="images/logo.png" alt="بلوغر - البث المباشر للمباريات">
-                    <span>news</span>
+                    <img src="assets/logo.png" alt="شعار فوت تي في" width="50">
+                    <span>فوت تي في</span>
                 </a>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#live-matches" class="active"><i class="fas fa-tv"></i> المباريات المباشرة</a></li>
-                    <li><a href="#news"><i class="fas fa-newspaper"></i> أخبار كرة القدم</a></li>
+                    <li><a href="index.html" class="active"><i class="fas fa-home"></i> الرئيسية</a></li>
+                    <li><a href="matches.html"><i class="fas fa-tv"></i> المباريات</a></li>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> الأخبار</a></li>
                 </ul>
             </nav>
-            <div class="mobile-menu-btn">
+            <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
-            </div>
+            </button>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- قسم البث المباشر -->
+    <section class="live-section">
         <div class="container">
-            <h1>تابع أهم المباريات المباشرة وأحدث أخبار كرة القدم</h1>
-            <p>موقع بلوغر يقدم لك تغطية شاملة لأهم المباريات والبطولات العالمية</p>
+            <h1 class="section-title">
+                <i class="fas fa-tv"></i> البث المباشر
+                <span class="live-badge">مباشر</span>
+            </h1>
+            
+            <div class="matches-grid" id="matches-container">
+                <!-- سيتم ملؤها بواسطة script.js -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل المباريات...
+                </div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <i class="fas fa-memory"></i>
+                    استخدام الذاكرة: <span id="memory">--</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-sync-alt"></i>
+                    آخر تحديث: <span id="last-update">--</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <!-- قسم المباريات القادمة -->
+    <section class="upcoming-section">
         <div class="container">
-            <!-- Today's Matches Section -->
-            <section id="today-matches" class="matches-section">
-                <div class="section-header">
-                    <h2><i class="far fa-calendar-alt"></i> مباريات اليوم</h2>
-                    <span class="date-display" id="today-date"></span>
-                </div>
-                <div class="matches-container" id="today-matches-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                </div>
-            </section>
-
-            <!-- Tomorrow's Matches Section -->
-            <section id="tomorrow-matches" class="matches-section">
-                <div class="section-header">
-                    <h2><i class="far fa-calendar-check"></i> مباريات الغد</h2>
-                    <span class="date-display" id="tomorrow-date"></span>
-                </div>
-                <div class="matches-container" id="tomorrow-matches-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                </div>
-            </section>
-
-            <!-- Match Highlights Section -->
-            <section id="highlights" class="highlights-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-play-circle"></i> ملخصات المباريات اليوم</h2>
-                </div>
-                <div class="highlights-container" id="highlights-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                </div>
-            </section>
-        </div>
-    </main>
-<!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section about">
-                    <div class="logo">
-                        <img src="images/logo-white.png" alt="بلوغر">
-                        <span>بلوغر</span>
-                    </div>
-                    <p>موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية. نقدم تغطية شاملة لأهم البطولات والمباريات.</p>
-                </div>
-                <div class="footer-section links">
-                    <h3>روابط سريعة</h3>
-                    <ul>
-                        <li><a href="#live-matches">المباريات المباشرة</a></li>
-                        <li><a href="#news">أخبار كرة القدم</a></li>
-                        <li><a href="#highlights">ملخصات المباريات</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section contact">
-                    <h3>تواصل معنا</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> info@blogger.com</li>
-                        <li><i class="fas fa-phone"></i> +123456789</li>
-                    </ul>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
+            <h2 class="section-title">
+                <i class="far fa-calendar-alt"></i> المباريات القادمة
+            </h2>
+            
+            <div class="matches-list" id="upcoming-matches">
+                <!-- سيتم ملؤها بواسطة script.js -->
             </div>
         </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2023 بلوغر. جميع الحقوق محفوظة.</p>
+    </section>
+
+    <!-- الفوتر -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-logo">
+                <img src="assets/logo-white.png" alt="شعار فوت تي في" width="60">
+                <span>فوت تي في</span>
             </div>
+            
+            <div class="footer-links">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="about.html">عن الموقع</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                    <li><a href="privacy.html">سياسة الخصوصية</a></li>
+                </ul>
+            </div>
+            
+            <div class="social-links">
+                <h3>تابعنا</h3>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; <span id="current-year"></span> جميع الحقوق محفوظة لموقع فوت تي في</p>
         </div>
     </footer>
 
-    <!-- Video Modal -->
-    <div class="video-modal" id="videoModal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="video-container">
-                <iframe id="videoFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
-        <script src="script.js"></script>
+    <!-- ملفات الجافاسكريبت -->
+    <script src="script.js"></script>
+    
+    <!-- كود تهيئة السنة الحالية -->
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
