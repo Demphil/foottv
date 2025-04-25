@@ -40,3 +40,27 @@ function filterMatches() {
         row.style.display = leagueMatch && dateMatch ? '' : 'none';
     });
 }
+import { FootballAPI } from './api.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // جلب مباريات الدوري السعودي (مثال: competitionId = 2019)
+    const data = await FootballAPI.getMatches('2019', '2023-11-01', '2023-11-30');
+    
+    if (data) {
+        const matches = data.matches;
+        const tableBody = document.querySelector('#matchesTable tbody');
+        
+        matches.forEach(match => {
+            const row = document.createElement('tr');
+            row.innerHTML = 
+                <td>${match.competition.name}</td>
+                <td>${new Date(match.utcDate).toLocaleDateString()}</td>
+                <td>${match.homeTeam.name}</td>
+                <td>vs</td>
+                <td>${match.awayTeam.name}</td>
+                <td>${match.status}</td>
+            ;
+            tableBody.appendChild(row);
+        });
+    }
+});
