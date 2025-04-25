@@ -3,41 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فوت بول ستريم - البث المباشر</title>
+    <meta name="description" content="موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية - تابع أهم المباريات والملخصات وأحدث الأخبار">
+    <meta name="keywords" content="مباريات مباشرة, كرة قدم, أخبار كرة القدم, ملخصات مباريات, مشاهدة مباريات">
+    <meta name="author" content="موقع بلوغر الرياضي">
+    <meta property="og:title" content="بلوغر - البث المباشر للمباريات وأخبار كرة القدم">
+    <meta property="og:description" content="شاهد أهم المباريات المباشرة وملخصات المباريات وأحدث أخبار كرة القدم">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.example.com">
+    <meta property="og:image" content="https://www.example.com/assets/images/logo.png">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <title>بلوغر - البث المباشر للمباريات وأخبار كرة القدم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="icon" href="assets/images/favicon.ico.jpg">
 </head>
 <body>
-    <header class="main-header">
+    <!-- Header Section -->
+    <header class="header">
         <div class="container">
-            <a href="index.html" class="logo">
-                <img src="assets/images/logo.jpg" alt="شعار الموقع">
-                <span>فوت بول ستريم</span>
-            </a>
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/images/logo.png" alt="بلوغر - البث المباشر للمباريات">
+                    <span>بلوغر</span>
+                </a>
+            </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" class="active">الرئيسية</a></li>
-                    <li><a href="screen.html">البث المباشر</a></li>
-                    <li><a href="matches.html">جدول المباريات</a></li>
-                    <li><a href="news.html">الأخبار</a></li>
+                    <li><a href="screen.html" class="active"><i class="fas fa-tv"></i> المباريات المباشرة</a></li>
+                    <li><a href="news.html"><i class="fas fa-newspaper"></i> أخبار كرة القدم</a></li>
+                    <li><a href="matches.html"><i class="fas fa-calendar-alt"></i> جدول المباريات</a></li>
                 </ul>
             </nav>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
     </header>
 
-    <main class="container">
-        <section class="hero">
-            <h1>متابعة المباريات مباشرة</h1>
-            <a href="screen.html" class="cta-button">شاهد البث المباشر الآن</a>
-        </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>تابع أهم المباريات المباشرة وأحدث أخبار كرة القدم</h1>
+            <p>موقع بلوغر يقدم لك تغطية شاملة لأهم المباريات والبطولات العالمية</p>
+        </div>
+    </section>
 
-        <section class="live-matches" id="liveMatches">
-            <!-- سيتم تعبئتها بالجافاسكريبت -->
-        </section>
-        <script>
-   window.DEBUG_MODE = true; // يعرض تفاصيل الأخطاء
-   </script>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Today's Matches Section -->
+            <section id="today-matches" class="matches-section">
+                <div class="section-header">
+                    <h2><i class="far fa-calendar-alt"></i> مباريات اليوم</h2>
+                    <span class="date-display" id="today-date"></span>
+                </div>
+                <div class="matches-container" id="today-matches-container">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </section>
+
+            <!-- Tomorrow's Matches Section -->
+            <section id="tomorrow-matches" class="matches-section">
+                <div class="section-header">
+                    <h2><i class="far fa-calendar-check"></i> مباريات الغد</h2>
+                    <span class="date-display" id="tomorrow-date"></span>
+                </div>
+                <div class="matches-container" id="tomorrow-matches-container">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </section>
+
+            <!-- Match Highlights Section -->
+            <section id="highlights" class="highlights-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-play-circle"></i> ملخصات المباريات اليوم</h2>
+                    </div>
+                <div class="highlights-container" id="highlights-container">
+                    <!-- سيتم ملؤها بواسطة JavaScript -->
+                </div>
+            </section>
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <div class="logo">
+                        <img src="assets/images/logo-white.png" alt="بلوغر">
+                        <span>بلوغر</span>
+                    </div>
+                    <p>موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية. نقدم تغطية شاملة لأهم البطولات والمباريات.</p>
+                </div>
+                <div class="footer-section links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="screen.html">المباريات المباشرة</a></li>
+                        <li><a href="news.html">أخبار كرة القدم</a></li>
+                        <li><a href="matches.html">جدول المباريات</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section contact">
+                    <h3>تواصل معنا</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@blogger.com</li>
+                        <li><i class="fas fa-phone"></i> +123456789</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; <span id="current-year"></span> بلوغر. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="video-container">
+                <iframe id="videoFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <script src="assets/js/main.js"></script>
 </body>
