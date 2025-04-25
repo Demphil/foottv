@@ -1,36 +1,59 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const newsContainer = document.getElementById('newsContainer');
-    
-    // في الواقع هنا ستجلب البيانات من API
-    const newsData = [
-        {
-            title: "رونالدو يسجل هدفين في مرمى الهلال",
-            image: "assets/images/news/ronaldo.jpg",
-            date: "2023-11-01",
-            summary: "قاد كريستيانو رونالدو فريقه النصر للفوز على الهلال بثلاثية نظيفة",
-            source: "كورة 365"
-        },
-        {
-            title: "الاتحاد يعلن عن تعاقد جديد",
-            image: "assets/images/news/ittihad.jpg",
-            date: "2023-10-30",
-            summary: "الاتحاد يوقع مع لاعب خط وسط منتخب فرنسا",
-            source: "سبورت"
-        }
-    ];
+// News API Configuration
+const NEWS_API_KEY = '8d831470f41e4dbe983fba512cc0c795'; // استبدلها بمفتاحك
+const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=كرة+قدم&language=ar&sortBy=publishedAt';
 
-    newsData.forEach(news => {
-        const card = document.createElement('div');
-        card.className = 'news-card';
-        card.innerHTML = 
-            <img src="${news.image}" alt="${news.title}" class="news-image">
-            <div class="news-content">
-                <span class="news-date">${news.date}</span>
-                <h3 class="news-title">${news.title}</h3>
-                <p>${news.summary}</p>
-                <span class="news-source">المصدر: ${news.source}</span>
-            </div>
-        ;
-        newsContainer.appendChild(card);
-    });
+// عناصر DOM
+const featuredNews = document.getElementById('featured-news');
+const newsGrid = document.getElementById('news-grid');
+const newsLoading = document.getElementById('news-loading');
+const loadMoreBtn = document.getElementById('load-more');
+
+// متغيرات التطبيق
+let currentPage = 1;
+const pageSize = 6;
+
+// تهيئة الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    fetchNews();
 });
+
+// جلب الأخبار
+async function fetchNews() {
+    try {
+        showNewsLoading();
+        
+        const response = await fetch(${NEWS_API_URL}&page=${currentPage}&pageSize=${pageSize}&apiKey=${NEWS_API_KEY});
+        const data = await response.json();
+        
+        if (currentPage === 1) {
+            renderFeaturedNews(data.articles[0]);
+            renderNewsGrid(data.articles.slice(1));
+        } else {
+            renderNewsGrid(data.articles, true);
+        }
+        
+        toggleLoadMoreButton(data.totalResults);
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        showNewsError('تعذر تحميل الأخبار. يرجى المحاولة لاحقاً');
+    } finally {
+        hideNewsLoading();
+    }
+}
+
+// عرض الخبر الرئيسي
+function renderFeaturedNews(article) {
+    if (!article) return;
+    
+    featuredNews.innerHTML = `
+        <div class="featured-card">
+            <div class="featured-image">
+                <img src="${article.urlToImage || 'assets/images/news-placeholder.jpg'}" 
+                     alt="${article.title}">
+            </div>
+            <div class="featured-content">
+                <span class="news-source">${article.source?.name || 'مصدر غير معروف'}</span>
+                <h2 class="news-title">${article.title}</h2>
+                <p class="news-description">${article.description || ''}</p>
+                <a href="${article.url}" target="_blank" class="read-more">
+                    اقرأ المزيد <i class="fas fa-arrow-left"></i
