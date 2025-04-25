@@ -9,7 +9,6 @@ const nowPlayingEl = document.getElementById('now-playing');
 let matchesData = [];
 let currentTab = 'all';
 let autoRefreshInterval;
-
 // تهيئة الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     loadMatches();
