@@ -1,41 +1,28 @@
-// متغيرات المباراة الحالية
-let currentMatch = null;
+// العناصر الأساسية
+const liveContainer = document.getElementById('live-matches-container');
+const refreshBtn = document.getElementById('refresh-btn');
+const lastUpdatedEl = document.getElementById('last-updated');
+const matchDetailsSection = document.getElementById('match-details');
+const nowPlayingEl = document.getElementById('now-playing');
 
-// جلب بيانات المباراة
-async function loadMatchData(matchId) {
-    const response = await fetch('data/matches.json');
-    const data = await response.json();
-    return data.matches.find(match => match.id === matchId);
-}
+// متغيرات التطبيق
+let matchesData = [];
+let currentTab = 'all';
+let autoRefreshInterval;
 
-// عرض بيانات المباراة
-function renderMatch(match) {
-    const matchViewer = document.getElementById('matchViewer');
-    
-    matchViewer.innerHTML = 
-        <div class="teams">
-            <div class="team home">
-                <img src="assets/images/teams/${match.home_team.toLowerCase()}.png" alt="${match.home_team}">
-                <span class="score">${match.score.split('-')[0]}</span>
-            </div>
-            <div class="vs">VS</div>
-            <div class="team away">
-                <span class="score">${match.score.split('-')[1]}</span>
-                <img src="assets/images/teams/${match.away_team.toLowerCase()}.png" alt="${match.away_team}">
-            </div>
-        </div>
-    ;
-}
+// تهيئة الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    loadMatches();
+    setupEventListeners();
+    startAutoRefresh();
+});
 
-// التهيئة عند تحميل الصفحة
-window.onload = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const matchId = urlParams.get('match');
-    
-    if (matchId) {
-        currentMatch = await loadMatchData(matchId);
-        if (currentMatch) {
-            renderMatch(currentMatch);
-        }
-    }
-};
+// تحميل المباريات
+async function loadMatches() {
+    try {
+        // إظهار حالة التحميل
+        refreshBtn.classList.add('rotating');
+        liveContainer.innerHTML = '<div class="loading">جاري تحميل المباريات...</div>';
+        
+        // جلب البيانات مع منع التخزين المؤقت
+        const
