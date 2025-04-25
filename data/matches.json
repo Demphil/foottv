@@ -1,1 +1,23 @@
-
+{
+    "last_updated": "2023-11-01T14:30:00Z",
+    "matches": [
+        {
+            "id": "match_101",
+            "home_team": "النصر",
+            "away_team": "الهلال",
+            "league": "الدوري السعودي",
+            "date": "2023-11-01",
+            "time": "20:00",
+            "status": "live",
+            "score": "2-1",
+            "events": [
+                {
+                    "minute": 23,
+                    "type": "goal",
+                    "player": "كريستيانو رونالدو",
+                    "description": "هدف عن طريق تسديدة قوية"
+                }
+            ]
+        }
+    ]
+}
