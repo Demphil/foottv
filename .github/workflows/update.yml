@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Fetch Data
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
@@ -18,10 +18,14 @@ jobs:
                "https://api.football-data.org/v4/matches" \
                > data/matches.json
 
-      - name: Commit & Push
+      - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Commit & Push
+        run: |
           git add data/matches.json
           git commit -m "Auto-update matches data" || echo "No changes"
           git push
