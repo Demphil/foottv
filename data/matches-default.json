@@ -1,15 +1,92 @@
-// في football.js
-   const CACHE_TIME = 1000 * 60 * 5; // 5 دقائق
-   let lastFetch = 0;
-   let cachedData = null;
-
-   export const getMatches = async () => {
-     if (Date.now() - lastFetch < CACHE_TIME && cachedData) {
-       return cachedData;
-     }
-     
-     const data = await fetch('/data/matches.json').then(res => res.json());
-     lastFetch = Date.now();
-     cachedData = data.matches;
-     return cachedData;
-   };
+{
+  "last_updated": "2025-04-25T00:00:00Z",
+  "matches": [
+    {
+      "id": 1,
+      "competition": {
+        "id": 2021,
+        "name": "الدوري الإنجليزي الممتاز",
+        "code": "PL",
+        "emblem": "assets/images/leagues/premier-league.png"
+      },
+      "homeTeam": {
+        "id": 57,
+        "name": "أرسنال",
+        "shortName": "Arsenal",
+        "crest": "assets/images/teams/arsenal.png"
+      },
+      "awayTeam": {
+        "id": 61,
+        "name": "تشيلسي",
+        "shortName": "Chelsea",
+        "crest": "assets/images/teams/chelsea.png"
+      },
+      "utcDate": "2025-04-28T16:30:00Z",
+      "status": "SCHEDULED",
+      "score": {
+        "fullTime": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "id": 2,
+      "competition": {
+        "id": 2014,
+        "name": "الدوري الإسباني",
+        "code": "PD",
+        "emblem": "assets/images/leagues/laliga.png"
+      },
+      "homeTeam": {
+        "id": 86,
+        "name": "ريال مدريد",
+        "shortName": "Real Madrid",
+        "crest": "assets/images/teams/real-madrid.png"
+      },
+      "awayTeam": {
+        "id": 81,
+        "name": "برشلونة",
+        "shortName": "Barcelona",
+        "crest": "assets/images/teams/barcelona.png"
+      },
+      "utcDate": "2025-05-01T19:00:00Z",
+      "status": "SCHEDULED",
+      "score": {
+        "fullTime": {
+          "home": null,
+          "away": null
+        }
+      }
+    },
+    {
+      "id": 3,
+      "competition": {
+        "id": 2019,
+        "name": "الدوري الإيطالي",
+        "code": "SA",
+        "emblem": "assets/images/leagues/serie-a.png"
+      },
+      "homeTeam": {
+        "id": 108,
+        "name": "إنتر ميلان",
+        "shortName": "Inter",
+        "crest": "assets/images/teams/inter.png"
+      },
+      "awayTeam": {
+        "id": 113,
+        "name": "يوفنتوس",
+        "shortName": "Juventus",
+        "crest": "assets/images/teams/juventus.png"
+      },
+      "utcDate": "2025-04-30T17:45:00Z",
+      "status": "TIMED",
+      "score": {
+        "fullTime": {
+          "home": null,
+          "away": null
+        }
+      }
+    }
+  ]
+}
