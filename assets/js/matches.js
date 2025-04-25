@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const response = await fetch('../data/matches.json');
-    const data = await response.json();
-    const tableBody = document.querySelector('#matchesTable tbody');
+    const response = await fetch('/api/matches');
+const data = await response.json();
+console.log(data); // لمعاينة البيانات
 
     data.matches.forEach(match => {
         const row = document.createElement('tr');
