@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول المباريات | فوت بول ستريم</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        /* تنسيقات خاصة بجدول المباريات */
+        .matches-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .matches-table th, .matches-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .matches-table th {
+            background-color: #d10a11;
+            color: white;
+        }
+        .matches-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .match-link {
+            color: #d10a11;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <!-- نفس الهيدر في index.html -->
+    </header>
 
+    <main class="container">
+        <h1><i class="fas fa-calendar-alt"></i> جدول المباريات</h1>
+        
+        <div class="filters">
+            <select id="leagueFilter">
+                <option value="all">جميع البطولات</option>
+                <option value="الدوري السعودي">الدوري السعودي</option>
+                <option value="البريميرليغ">البريميرليغ</option>
+            </select>
+            <input type="date" id="dateFilter">
+        </div>
+
+        <table class="matches-table" id="matchesTable">
+            <thead>
+                <tr>
+                    <th>البطولة</th>
+                    <th>التاريخ</th>
+                    <th>الفريق المضيف</th>
+                    <th>vs</th>
+                    <th>الفريق الضيف</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- سيتم تعبئتها بالجافاسكريبت -->
+            </tbody>
+        </table>
+    </main>
+
+    <script src="assets/js/matches.js"></script>
+</body>
+</html>
