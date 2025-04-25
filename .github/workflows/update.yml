@@ -1,23 +1,26 @@
 name: Update Match Data
 on:
   schedule:
-    - cron: '*/30 * * * *'  # كل 30 دقيقة
+    - cron: '0 */6 * * *'  # كل 6 ساعات
   workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Fetch New Data
         run: |
-          curl -o data/matches.json https://api.football-data.org/v4/matches
+          pip install requests
+          python .github/scripts/fetch-data.py
+        env:
+          API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
           
       - name: Commit Changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add .
+          git add data/matches.json
           git commit -m "Auto-update match data"
           git push
