@@ -2,7 +2,7 @@ name: Update Matches
 on:
   schedule:
     - cron: '0 */6 * * *'  # كل 6 ساعات
-  workflow_dispatch:       # تشغيل يدوي
+  workflow_dispatch:
 
 jobs:
   update:
@@ -12,18 +12,16 @@ jobs:
       
       - name: Fetch Data
         env:
-          API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: |
-          curl -H "X-Auth-Token: $API_KEY" \
+          curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
                "https://api.football-data.org/v4/matches" \
                > data/matches.json
-          
-          echo "LAST_UPDATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
 
       - name: Commit & Push
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add data/matches.json
-          git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M:%S')" || echo "No changes"
+          git commit -m "Auto-update matches data" || echo "No changes"
           git push
