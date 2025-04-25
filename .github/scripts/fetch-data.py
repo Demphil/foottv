@@ -1,49 +1,53 @@
 #!/usr/bin/env python3
-import os
-import json
 import requests
+import json
 from datetime import datetime, timedelta
+import os
 
-# Configuration
-API_KEY = os.getenv('FOOTBALL_API_KEY')  # يُفضل استخدام Secrets
-DATA_FILE = 'data/matches.json'
-LEAGUES = ['PL', 'PD', 'SA', 'BL1', 'FL1', 'SPL']  # رموز البطولات
+# Config
+API_KEY = os.getenv("FOOTBALL_API_KEY", "your_fallback_key_here")
+DATA_FILE = "data/matches.json"
+BASE_URL = "https://api.football-data.org/v4"
 
 def fetch_matches():
-    base_url = 'https://api.football-data.org/v4/matches'
-    headers = {'X-Auth-Token': API_KEY}
-    
-    # تحديد نطاق التاريخ (اليوم + 7 أيام)
-    date_from = datetime.now().strftime('%Y-%m-%d')
-    date_to = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
-    
-    matches = []
-    
-    for league in LEAGUES:
-        url = f'{base_url}?competitions={league}&dateFrom={date_from}&dateTo={date_to}'
-        try:
-            response = requests.get(url, headers=headers)
-            response.raise_for_status()
-            data = response.json()
-            matches.extend(data['matches'])
-        except Exception as e:
-            print(f'Error fetching {league}: {e}')
-    
-    return {
-        'last_updated': datetime.utcnow().isoformat() + 'Z',
-        'matches': matches
-    }
+    """Fetch matches data from API"""
+    try:
+        today = datetime.now().strftime('%Y-%m-%d')
+        next_week = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+        
+        response = requests.get(
+            f"{BASE_URL}/matches?dateFrom={today}&dateTo={next_week}",
+            headers={"X-Auth-Token": API_KEY},
+            timeout=10  # 10 ثواني كحد أقصى للانتظار
+        )
+        response.raise_for_status()
+        
+        return {
+            "last_updated": datetime.utcnow().isoformat() + "Z",
+            "matches": response.json().get('matches', [])
+        }
+        
+    except Exception as e:
+        print(f"API Error: {str(e)}")
+        return None
 
 def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    """Save data to JSON file"""
+    try:
+        os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"File Error: {str(e)}")
+        return False
 
-if name == 'main':
-    if not API_KEY:
-        print('Error: API_KEY not set!')
-        exit(1)
+if name == "main":
+    print("⏳ جلب بيانات المباريات...")
+    matches_data = fetch_matches()
     
-    print('Fetching latest matches data...')
-    data = fetch_matches()
-    save_data(data)
-    print(f'Successfully updated {len(data["matches"])} matches')
+    if matches_data and save_data(matches_data):
+        print(f"✅ تم تحديث {len(matches_data['matches'])} مباراة بنجاح")
+    else:
+        print("❌ فشل في تحديث البيانات")
+        exit(1)
