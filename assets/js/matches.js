@@ -40,7 +40,7 @@ function filterMatches() {
         row.style.display = leagueMatch && dateMatch ? '' : 'none';
     });
 }
-import { FootballAPI } from './api.js';
+import { FootballAPI } from './api/matches.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // جلب مباريات الدوري السعودي (مثال: competitionId = 2025)
