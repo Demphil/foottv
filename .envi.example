@@ -1,0 +1,4 @@
+# ملف .env.example (يُرفع إلى GitHub)
+   FOOTBALL_API_KEY=your_api_key_here
+   BASE_URL=https://api.example.com
+   DEBUG_MODE=false
