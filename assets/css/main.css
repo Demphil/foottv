@@ -501,3 +501,23 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.match-date {
+  font-size: 0.9rem;
+  color: var(--gray-color);
+}
+
+.no-matches {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: var(--border-radius);
+  color: var(--gray-color);
+}
