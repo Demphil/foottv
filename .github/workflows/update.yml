@@ -1,7 +1,7 @@
 name: Update Matches
 on:
   schedule:
-    - cron: '0 */6 * * *'  # كل 6 ساعات
+    - cron: '0 */6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # ضروري لعمل git push
 
       - name: Fetch Data
         env:
@@ -27,5 +29,5 @@ jobs:
       - name: Commit & Push
         run: |
           git add data/matches.json
-          git commit -m "Auto-update matches data" || echo "No changes"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update matches data"
           git push
