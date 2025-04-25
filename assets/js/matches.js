@@ -1,66 +1,212 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const response = await fetch('/api/matches');
-const data = await response.json();
-console.log(data); // لمعاينة البيانات
+// Football Data API Configuration
+const API_KEY = '8d831470f41e4dbe983fba512cc0c795'; // استبدلها بمفتاحك
+const API_BASE = 'https://api.football-data.org/v4';
+const HEADERS = {
+    'X-Auth-Token': API_KEY,
+    'Content-Type': 'application/json'
+};
 
-    data.matches.forEach(match => {
+// عناصر DOM
+const leagueSelect = document.getElementById('league-select');
+const dateSelect = document.getElementById('date-select');
+const fetchBtn = document.getElementById('fetch-matches');
+const matchesTbody = document.getElementById('matches-tbody');
+const loadingSpinner = document.getElementById('loading-spinner');
+
+// تهيئة الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    loadLeagues();
+    fetchMatches();
+});
+
+// جلب قائمة البطولات
+async function loadLeagues() {
+    try {
+        const response = await fetch(${API_BASE}/competitions, {
+            headers: HEADERS
+        });
+        const data = await response.json();
+        
+        data.competitions.forEach(league => {
+            if (league.plan === 'TIER_ONE') { // تصفية البطولات المهمة فقط
+                const option = document.createElement('option');
+                option.value = league.id;
+                option.textContent = league.name;
+                leagueSelect.appendChild(option);
+            }
+        });
+    } catch (error) {
+        console.error('Error loading leagues:', error);
+        showError('تعذر تحميل قائمة البطولات');
+    }
+}
+
+// جلب المباريات حسب الفلتر
+async function fetchMatches() {
+    try {
+        showLoading();
+        
+        const leagueId = leagueSelect.value;
+        const dateRange = dateSelect.value;
+        
+        let apiUrl = ${API_BASE}/matches;
+        
+        // إضافة فلتر البطولة
+        if (leagueId !== 'all') {
+            apiUrl = ${API_BASE}/competitions/${leagueId}/matches;
+        }
+        
+        // إضافة فلتر التاريخ
+        const today = new Date();
+        const dateTo = new Date();
+        
+        if (dateRange === '7') {
+            dateTo.setDate(today.getDate() + 7);
+        } else if (dateRange === '30') {
+            dateTo.setDate(today.getDate() + 30);
+        }
+        
+        apiUrl += ?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)};
+        
+        const response = await fetch(apiUrl, {
+            headers: HEADERS
+        });
+        const data = await response.json();
+        
+        renderMatches(data.matches);
+    } catch (error) {
+        console.error('Error fetching matches:', error);
+        showError('تعذر تحميل المباريات. يرجى المحاولة لاحقاً');
+    } finally {
+        hideLoading();
+    }
+}
+
+// عرض المباريات في الجدول
+function renderMatches(matches) {
+    matchesTbody.innerHTML = '';
+    
+    if (!matches || matches.length === 0) {
+        matchesTbody.innerHTML = 
+            <tr class="no-matches">
+                <td colspan="6">لا توجد مباريات متاحة</td>
+            </tr>
+        ;
+        return;
+    }
+    
+    matches.forEach(match => {
         const row = document.createElement('tr');
-        row.innerHTML = 
-            <td>${match.league}</td>
-            <td>${match.date} - ${match.time}</td>
-            <td>${match.home_team}</td>
-            <td>vs</td>
-            <td>${match.away_team}</td>
+        row.innerHTML = `
             <td>
-                <span class="status ${match.status}">
-                    ${match.status === 'live' ? 'مباشر' : 'قادمة'}
-                </span>
+                <img src="${getLeagueLogo(match.competition.code)}" 
+                     alt="${match.competition.name}" 
+                     class="league-logo">
+                ${match.competition.name}
+            </td>
+            <td>${formatMatchDate(match.utcDate)}</td>
+            <td class="team-cell">
+                <img src="${getTeamLogo(match.homeTeam.id)}" 
+                     alt="${match.homeTeam.name}" 
+                     class="team-logo">
+                ${match.homeTeam.name}
+            </td>
+            <td class="score-cell">
+                ${match.score.fullTime.home ?? '-'} - ${match.score.fullTime.away ?? '-'}
+            </td>
+            <td class="team-cell">
+                <img src="${getTeamLogo(match.awayTeam.id)}" 
+                     alt="${match.awayTeam.name}"
+                     class="team-logo">
+                ${match.awayTeam.name}
+            </td>
+            <td class="status-cell ${getStatusClass(match.status)}">
+                ${getStatusText(match.status)}
             </td>
         ;
-        tableBody.appendChild(row);
-    });
-
-    // فلترة المباريات
-    document.getElementById('leagueFilter').addEventListener('change', filterMatches);
-    document.getElementById('dateFilter').addEventListener('change', filterMatches);
-});
-
-function filterMatches() {
-    const league = document.getElementById('leagueFilter').value;
-    const date = document.getElementById('dateFilter').value;
-    const rows = document.querySelectorAll('#matchesTable tbody tr');
-
-    rows.forEach(row => {
-        const rowLeague = row.cells[0].textContent;
-        const rowDate = row.cells[1].textContent.split(' - ')[0];
-        
-        const leagueMatch = league === 'all' || rowLeague.includes(league);
-        const dateMatch = !date || rowDate === date;
-        
-        row.style.display = leagueMatch && dateMatch ? '' : 'none';
+        matchesTbody.appendChild(row);
     });
 }
-import { FootballAPI } from './api/football.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // جلب مباريات الدوري السعودي (مثال: competitionId = 2025)
-    const data = await FootballAPI.getMatches('2025', '2025-04-25', '2025-04-30');
-    
-    if (data) {
-        const matches = data.matches;
-        const tableBody = document.querySelector('#matchesTable tbody');
-        
-        matches.forEach(match => {
-            const row = document.createElement('tr');
-            row.innerHTML = 
-                <td>${match.competition.name}</td>
-                <td>${new Date(match.utcDate).toLocaleDateString()}</td>
-                <td>${match.homeTeam.name}</td>
-                <td>vs</td>
-                <td>${match.awayTeam.name}</td>
-                <td>${match.status}</td>
-            ;
-            tableBody.appendChild(row);
-        });
-    }
-});
+// وظائف مساعدة
+function formatAPIDate(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function formatMatchDate(dateString) {
+    const options = { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleString('ar-EG', options);
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'SCHEDULED': 'scheduled',
+        'LIVE': 'live',
+        'IN_PLAY': 'live',
+        'PAUSED': 'live',
+        'FINISHED': 'finished',
+        'POSTPONED': 'postponed',
+        'SUSPENDED': 'postponed',
+        'CANCELED': 'canceled'
+    };
+    return statusMap[status] || '';
+}
+
+function getStatusText(status) {
+    const statusText = {
+        'SCHEDULED': 'مجدولة',
+        'LIVE': 'مباشر',
+        'IN_PLAY': 'مباشر',
+        'PAUSED': 'مستأنفة قريباً',
+        'FINISHED': 'انتهت',
+        'POSTPONED': 'مؤجلة',
+        'SUSPENDED': 'معلقة',
+        'CANCELED': 'ملغاة'
+    };
+    return statusText[status] || status;
+}
+
+function getLeagueLogo(competitionCode) {
+    // يمكنك استبدال هذا بروابط صور البطولات الخاصة بك
+    return assets/images/leagues/${competitionCode}.png;
+}
+
+function getTeamLogo(teamId) {
+    // يمكنك استخدام Football Data API للحصول على شعارات الفرق
+    // أو استخدام صور محلية
+    return assets/images/teams/${teamId}.png;
+}
+
+function showLoading() {
+    loadingSpinner.style.display = 'flex';
+    matchesTbody.style.opacity = '0.5';
+}
+
+function hideLoading() {
+    loadingSpinner.style.display = 'none';
+    matchesTbody.style.opacity = '1';
+}
+
+function showError(message) {
+    matchesTbody.innerHTML = 
+        <tr class="error-row">
+            <td colspan="6">
+                <i class="fas fa-exclamation-circle"></i>
+                ${message}
+                <button onclick="fetchMatches()">إعادة المحاولة</button>
+            </td>
+        </tr>
+    `;
+}
+
+// إضافة مستمعي الأحداث
+fetchBtn.addEventListener('click', fetchMatches);
+leagueSelect.addEventListener('change', fetchMatches);
+dateSelect.addEventListener('change', fetchMatches);
