@@ -4,88 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>البث المباشر - بلوغر</title>
-    <link rel="stylesheet" href="assets/css/live.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0a0a1a;
+            color: white;
+        }
+        .live-match {
+            background: #1e1e2f;
+            border-left: 4px solid #e63946;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .teams {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .team-logo {
+            width: 50px;
+            height: 50px;
+        }
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
-<body class="live-mode">
-    <!-- شريط التحكم العلوي -->
-    <header class="live-header">
-        <div class="container">
-            <a href="index.html" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>العودة للرئيسية</span>
-            </a>
-            <div class="live-title">
-                <img src="assets/images/logo-white.png" alt="بلوغر">
-                <h1>القناة المباشرة</h1>
-            </div>
-            <div class="live-actions">
-                <button id="refresh-btn">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>تحديث</span>
-                </button>
-                <span id="last-updated"></span>
-            </div>
-        </div>
-    </header>
+<body>
+    <div class="container">
+        <h1>المباريات المباشرة</h1>
+        <div id="live-matches"></div>
+    </div>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="live-main">
-        <div class="container">
-            <!-- قسم المباريات المباشرة -->
-            <section class="live-matches-section">
-                <div class="section-tabs">
-                    <button class="tab-btn active" data-tab="all">جميع المباريات</button>
-                    <button class="tab-btn" data-tab="popular">الأكثر متابعة</button>
-                    <button class="tab-btn" data-tab="league">حسب البطولات</button>
-                </div>
-                
-                <div class="live-matches-grid" id="live-matches-container">
-                    <!-- سيتم تعبئتها بواسطة JavaScript -->
-                </div>
-            </section>
+    <script>
+        function loadLiveMatches() {
+            fetch('data/matches.json?t=' + new Date().getTime())
+                .then(response => response.json())
+                .then(data => {
+                    const liveContainer = document.getElementById('live-matches');
+                    liveContainer.innerHTML = '';
+                    
+                    const liveMatches = data.matches.filter(match => 
+                        match.status === 'LIVE' || match.status === 'IN_PLAY');
+                    
+                    if (liveMatches.length === 0) {
+                        liveContainer.innerHTML = '<p>لا توجد مباريات مباشرة حالياً</p>';
+                        return;
+                    }
+                    
+                    liveMatches.forEach(match => {
+                        const matchElement = document.createElement('div');
+                        matchElement.className = 'live-match';
+                        matchElement.innerHTML = 
+                            <div class="teams">
+                                <div class="team">
+                                    <img src="assets/images/teams/${match.home_team.toLowerCase()}.png" 
+                                         alt="${match.home_team}" class="team-logo">
+                                    <h2>${match.home_team}</h2>
+                                </div>
+                                <div class="score">${match.home_score || '0'} - ${match.away_score || '0'}</div>
+                                <div class="team">
+                                    <img src="assets/images/teams/${match.away_team.toLowerCase()}.png" 
+                                         alt="${match.away_team}" class="team-logo">
+                                    <h2>${match.away_team}</h2>
+                                </div>
+                            </div>
+                            <div class="match-info">
+                                <p>الدقيقة: ${match.minute || '0'}'</p>
+                                <p>البطولة: ${match.league}</p>
+                            </div>
+                        ;
+                        liveContainer.appendChild(matchElement);
+                    });
+                });
+        }
 
-            <!-- قسم إحصائيات المباراة (تظهر عند اختيار مباراة) -->
-            <section class="match-details-section" id="match-details">
-                <div class="details-header">
-                    <h2 id="detail-match-title"></h2>
-                    <button class="close-details"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="details-content">
-                    <div class="match-stats">
-                        <!-- الإحصائيات -->
-                    </div>
-                    <div class="match-commentary">
-                        <!-- التعليق النصي -->
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- شريط الحالة السفلية -->
-    <footer class="live-footer">
-        <div class="container">
-            <div class="now-playing" id="now-playing">
-                <span>لا توجد مباراة قيد التشغيل</span>
-            </div>
-            <div class="live-indicator">
-                <span class="live-dot"></span>
-                <span>مباشر</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ستايلات الطوارئ إذا لم يتم تحميل CSS -->
-    <noscript>
-        <style>
-            body { font-family: Arial, sans-serif; background: #000; color: #fff; }
-            .container { padding: 20px; }
-            a { color: #4CAF50; }
-        </style>
-    </noscript>
-
-    <script src="assets/js/live.js" defer></script>
+        // تحديث البيانات كل 30 ثانية للمباريات المباشرة
+        loadLiveMatches();
+        setInterval(loadLiveMatches, 30000);
+    </script>
 </body>
 </html>
