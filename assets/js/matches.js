@@ -210,3 +210,23 @@ function showError(message) {
 fetchBtn.addEventListener('click', fetchMatches);
 leagueSelect.addEventListener('change', fetchMatches);
 dateSelect.addEventListener('change', fetchMatches);
+    import { getLeagueEmblem } from '../data/leagues.js';
+
+// عند عرض المباريات
+function renderMatches(matches) {
+  matches.forEach(match => {
+    const leagueEmblem = getLeagueEmblem(match.competition.code);
+    // استخدام leagueEmblem في عرض البطولة
+  });
+}
+    // في حالة فشل API
+async function fetchMatches() {
+  try {
+    const response = await fetch(API_URL);
+    return await response.json();
+  } catch (error) {
+    console.error('Using default matches data');
+    const defaultData = await fetch('data/matches-default.json');
+    return await defaultData.json();
+  }
+}
