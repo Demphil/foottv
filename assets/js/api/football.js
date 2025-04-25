@@ -8,3 +8,10 @@ export const getMatches = async () => {
     return [];
   }
 };
+// في football.js
+   const TEST_MODE = true;
+   
+   export const getMatches = async () => {
+     if (TEST_MODE) return getTestMatches();
+     // ... الكود الأصلي
+   };
