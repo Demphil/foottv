@@ -1,0 +1,21 @@
+# ملف .gitignore
+
+# ملفات البيئة
+.env
+.env.*
+!.env.example
+
+# ملفات النظام
+.DS_Store
+Thumbs.db
+
+# مجلدات التبعيات
+node_modules/
+
+# ملفات البناء
+dist/
+build/
+
+# ملفات IDE
+.idea/
+.vscode/
