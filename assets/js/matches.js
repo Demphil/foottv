@@ -43,8 +43,8 @@ function filterMatches() {
 import { FootballAPI } from './api.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // جلب مباريات الدوري السعودي (مثال: competitionId = 2019)
-    const data = await FootballAPI.getMatches('2019', '2023-11-01', '2023-11-30');
+    // جلب مباريات الدوري السعودي (مثال: competitionId = 2025)
+    const data = await FootballAPI.getMatches('2025', '2025-04-25', '2025-04-30');
     
     if (data) {
         const matches = data.matches;
