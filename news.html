@@ -3,61 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أخبار كرة القدم | فوت بول ستريم</title>
+    <title>أخبار كرة القدم - بلوغر</title>
     <link rel="stylesheet" href="assets/css/main.css">
-    <style>
-        /* تنسيقات خاصة بصفحة الأخبار */
-        .news-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .news-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .news-card:hover {
-            transform: translateY(-5px);
-        }
-        .news-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .news-content {
-            padding: 15px;
-        }
-        .news-date {
-            color: #777;
-            font-size: 0.9rem;
-        }
-        .news-title {
-            margin: 10px 0;
-            color: #d10a11;
-        }
-        .news-source {
-            color: #555;
-            font-style: italic;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/news.css">
 </head>
 <body>
-    <header class="main-header">
-        <!-- نفس الهيدر في index.html -->
-    </header>
+    <!-- الهيدر (مشابه لـ index.html) -->
 
-    <main class="container">
-        <h1><i class="fas fa-newspaper"></i> آخر الأخبار</h1>
-        
-        <div class="news-container" id="newsContainer">
-            <!-- سيتم تعبئتها بالجافاسكريبت -->
+    <main class="main-content">
+        <div class="container">
+            <!-- قسم الأخبار الرئيسية -->
+            <section class="featured-news" id="featured-news">
+                <!-- سيتم ملؤها بواسطة API -->
+            </section>
+
+            <!-- قسم آخر الأخبار -->
+            <section class="latest-news">
+                <h2 class="section-title"><i class="fas fa-newspaper"></i> آخر الأخبار</h2>
+                <div class="news-grid" id="news-grid">
+                    <!-- سيتم ملؤها بواسطة API -->
+                </div>
+                
+                <div class="loading-spinner" id="news-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>جاري تحميل الأخبار...</span>
+                </div>
+                
+                <button id="load-more" class="load-more-btn">
+                    <i class="fas fa-plus"></i> تحميل المزيد
+                </button>
+            </section>
         </div>
     </main>
 
-    <script src="assets/js/news.js"></script>
+    <!-- الفوتر (مشابه لـ index.html) -->
+
+    <script src="assets/js/news.js" defer></script>
 </body>
 </html>
