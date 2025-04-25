@@ -1,7 +1,7 @@
 name: Update Matches
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '*/10 * * * *'  # كل 10 دقائق (للاختبار)
   workflow_dispatch:
 
 permissions:
