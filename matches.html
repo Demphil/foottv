@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="جدول المباريات المباشر لبطولات كرة القدم على موقع Foot Tv">
     <title>جدول المباريات - Foot Tv</title>
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></noscript>
+    
+    <!-- تحميل متقدم للخطوط -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></noscript>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/live.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preload" href="assets/css/live.css" as="style">
+    <link rel="stylesheet" href="assets/css/live.css" media="print" onload="this.media='all'">
     
-    <!-- Preconnect لتحسين أداء التحميل -->
+    <!-- Preconnect لتحسين الأداء -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
@@ -27,10 +30,10 @@
     <main class="main-content">
         <div class="container">
             <!-- فلتر المباريات -->
-            <section class="matches-filters">
+            <section class="matches-filters" aria-label="فلاتر البحث عن المباريات">
                 <div class="filter-group">
                     <label for="league-select" class="filter-label">اختر البطولة:</label>
-                    <select id="league-select" class="filter-select">
+                    <select id="league-select" class="filter-select" aria-label="قائمة البطولات">
                         <option value="all">جميع البطولات</option>
                         <!-- سيتم ملؤها بواسطة JavaScript -->
                     </select>
@@ -38,55 +41,64 @@
 
                 <div class="filter-group">
                     <label for="date-select" class="filter-label">اختر التاريخ:</label>
-                    <select id="date-select" class="filter-select">
+                    <select id="date-select" class="filter-select" aria-label="قائمة التواريخ">
+                        <option value="today">اليوم</option>
                         <option value="7">الأسبوع الحالي</option>
                         <option value="30">الشهر الحالي</option>
-                        <option value="custom">تحديد تاريخ</option>
                     </select>
                 </div>
 
-                <button id="refresh-btn" class="fetch-btn">
+                <button id="refresh-btn" class="fetch-btn" aria-label="تحديث البيانات">
                     <i class="fas fa-sync-alt"></i> تحديث
                 </button>
             </section>
 
             <!-- جدول المباريات -->
-            <section class="matches-table-container">
-                <div id="now-playing" class="now-playing-banner"></div>
+            <section class="matches-table-container" aria-labelledby="matches-table-title">
+                <h2 id="matches-table-title" class="sr-only">قائمة المباريات</h2>
+                
+                <div id="now-playing" class="now-playing-banner" aria-live="polite"></div>
                 
                 <div class="table-responsive">
-                    <table class="matches-table" id="matches-table">
+                    <table class="matches-table" id="matches-table" aria-describedby="matches-table-desc">
+                        <caption id="matches-table-desc" class="sr-only">جدول مواعيد ونتائج المباريات</caption>
                         <thead>
                             <tr>
-                                <th>البطولة</th>
-                                <th>التاريخ</th>
-                                <th>الفريق المضيف</th>
-                                <th>النتيجة</th>
-                                <th>الفريق الضيف</th>
-                                <th>الحالة</th>
+                                <th scope="col">البطولة</th>
+                                <th scope="col">التاريخ</th>
+                                <th scope="col">الفريق المضيف</th>
+                                <th scope="col">النتيجة</th>
+                                <th scope="col">الفريق الضيف</th>
+                                <th scope="col">الحالة</th>
                             </tr>
                         </thead>
-                        <tbody id="matches-tbody">
+                        <tbody id="matches-tbody" aria-live="polite">
                             <!-- سيتم ملؤها بواسطة JavaScript -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- رسائل الحالة -->
-                <div id="no-data-message" class="no-data-message" style="display: none;">
-                    <i class="far fa-frown"></i>
+                <div id="no-data-message" class="no-data-message" style="display: none;" aria-live="polite">
+                    <i class="far fa-frown" aria-hidden="true"></i>
                     <p>لا توجد مباريات لعرضها حاليًا.</p>
                 </div>
 
-                <div id="loading-spinner" class="loading-spinner" style="display: none;">
+                <div id="loading-spinner" class="loading-spinner" style="display: none;" aria-hidden="true">
                     <i class="fas fa-spinner fa-spin"></i>
                     <span>جاري تحميل البيانات...</span>
                 </div>
             </section>
 
             <!-- تفاصيل المباراة -->
-            <section id="match-details" class="match-details" style="display: none;">
-                <!-- سيتم ملؤها بواسطة JavaScript -->
+            <section id="match-details" class="match-details" style="display: none;" aria-modal="true" aria-labelledby="match-details-title" role="dialog">
+                <div class="match-details-content">
+                    <button id="close-details" class="close-btn" aria-label="إغلاق النافذة">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 id="match-details-title">تفاصيل المباراة</h3>
+                    <div id="match-details-content"></div>
+                </div>
             </section>
         </div>
     </main>
@@ -100,5 +112,13 @@
 
     <!-- JavaScript -->
     <script src="assets/js/live.js" defer></script>
+    
+    <!-- Fallback للخطوط -->
+    <script>
+        if(!document.fonts.check('1em FontAwesome')) {
+            document.head.insertAdjacentHTML('beforeend', 
+                '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">');
+        }
+    </script>
 </body>
 </html>
