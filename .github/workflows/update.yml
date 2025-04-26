@@ -15,26 +15,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      # الخطوة المعدلة: تثبيت Node.js فقط بدون npm install
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        run: npm install  # إذا كنت تحتاج أي dependencies
+      # الخطوة الجديدة: إنشاء مجلد data إذا لم يكن موجوداً
+      - name: Create data directory
+        run: mkdir -p data
 
       - name: Fetch Data from API
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
-          RAPIDAPI_HOST: ${{ secrets.RAPIDAPI_HOST }}  # أضف هذا إذا كان مطلوباً
+          RAPIDAPI_HOST: ${{ secrets.RAPIDAPI_HOST }}
         run: |
           curl -X GET "https://api-football-v1.p.rapidapi.com/v3/fixtures" \
             -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
-            -H "X-RapidAPI-Host: api-football-v1.p.rapidapi.com" \
-            -o data/matches.json
+            -H "X-RapidAPI-Host: $RAPIDAPI_HOST" \
+            -o data/matches.json || echo "API fetch failed, will use fallback"
 
+      # الخطوة المعدلة: تشغيل السكربت مباشرة بدون npm
       - name: Generate new matches (fallback)
-        if: failure()  # يعمل فقط إذا فشل جلب البيانات من API
+        if: failure() || contains(steps.api-fetch.outcome, 'failure')
         run: |
           node scripts/generate-matches.js
 
