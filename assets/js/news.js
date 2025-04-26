@@ -1,5 +1,5 @@
 // News API Configuration
-const NEWS_API_KEY = '8d831470f41e4dbe983fba512cc0c795'; // استبدلها بمفتاحك
+const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك
 const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=كرة+قدم&language=ar&sortBy=publishedAt';
 
 // عناصر DOM
