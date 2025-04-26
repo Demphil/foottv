@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadLeagues() {
     try {
         showLoading();
-        const apiUrl = 'https://api.rapidapi.com/competitions'; // رابط RapidAPI لجلب البطولات
+        const apiUrl = 'https://rapidapi.com'; // رابط RapidAPI لجلب البطولات
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
