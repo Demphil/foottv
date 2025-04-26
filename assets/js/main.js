@@ -1,3 +1,4 @@
+// Fetch match data from API
 async function fetchMatches() {
   try {
     const response = await fetch('https://api.football-data.org/v4/matches', {
@@ -5,6 +6,27 @@ async function fetchMatches() {
         'X-Auth-Token': 'YOUR_API_KEY'
       }
     });
+const express = require('express');
+const axios = require('axios');
+const app = express();
+
+const API_KEY = process.env.API_KEY;
+
+app.get('/matches', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.football-data.org/v4/matches', {
+      headers: { 'X-Auth-Token': API_KEY },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching matches');
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
 
     if (!response.ok) {
       throw new Error(`Network error: ${response.status}`);
@@ -19,6 +41,7 @@ async function fetchMatches() {
   }
 }
 
+// Load and render match data into the page
 async function loadMatchesData() {
   const container = document.getElementById('highlights-container');
   if (!container) return;
@@ -57,6 +80,7 @@ async function loadMatchesData() {
   }
 }
 
+// Render highlights section for each match
 function renderHighlights(highlights) {
   if (!highlights.length) return '';
 
@@ -85,6 +109,7 @@ function renderHighlights(highlights) {
   `;
 }
 
+// Set up event listeners for highlight clicks
 function setupEventListeners() {
   document.querySelectorAll('.highlight-thumbnail').forEach(item => {
     item.addEventListener('click', function () {
@@ -93,12 +118,14 @@ function setupEventListeners() {
   });
 }
 
+// Set auto-refresh for match data
 function setAutoRefresh() {
   setInterval(loadMatchesData, 60000);
 
   window.addEventListener('focus', loadMatchesData);
 }
 
+// Get CSS class for match status
 function getStatusClass(status) {
   const statusClasses = {
     'SCHEDULED': 'not-started',
@@ -111,6 +138,7 @@ function getStatusClass(status) {
   return statusClasses[status] || '';
 }
 
+// Get text for match status
 function getStatusText(status, minute) {
   const statusTexts = {
     'SCHEDULED': 'لم تبدأ',
@@ -123,6 +151,7 @@ function getStatusText(status, minute) {
   return statusTexts[status] || status;
 }
 
+// Update the last updated timestamp
 function updateLastUpdated(timestamp) {
   const date = new Date(timestamp);
   document.querySelectorAll('.last-updated').forEach(el => {
@@ -130,6 +159,7 @@ function updateLastUpdated(timestamp) {
   });
 }
 
+// Show error message
 function showError(message) {
   const errorEl = document.createElement('div');
   errorEl.className = 'error-message';
@@ -138,6 +168,7 @@ function showError(message) {
   setTimeout(() => errorEl.remove(), 5000);
 }
 
+// Open video modal for highlights
 function openVideoModal(videoUrl) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoFrame');
@@ -156,8 +187,8 @@ function openVideoModal(videoUrl) {
   });
 }
 
+// Validate match dates
 function validateDates(matches) {
-  const currentDate = new Date();
   return matches.filter(match => {
     try {
       const matchDate = new Date(match.utcDate);
@@ -168,6 +199,7 @@ function validateDates(matches) {
   });
 }
 
+// Initialize on DOM content load
 document.addEventListener('DOMContentLoaded', () => {
   loadMatchesData();
   setAutoRefresh();
