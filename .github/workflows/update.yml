@@ -1,7 +1,8 @@
 name: Update Matches
+
 on:
   schedule:
-    - cron: '*/10 * * * *'  # كل 10 دقائق (للاختبار)
+    - cron: '*/10 * * * *'  # يتم التشغيل كل 10 دقائق
   workflow_dispatch:
 
 permissions:
@@ -11,26 +12,39 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Fetch Data
+      # Fetch matches data
+      - name: Fetch Matches Data
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
         run: |
           curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
                "https://api.football-data.org/v4/matches" \
-               > data/matches.json
+               -o data/matches.json
 
+      # Validate JSON format
+      - name: Validate JSON File
+        run: |
+          jq . data/matches.json > /dev/null || exit 1
+
+      # Configure Git for Actions
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: Commit & Push
+      # Commit and Push Changes
+      - name: Commit & Push Changes
         run: |
           git add data/matches.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update matches data"
-          git push
+          if ! git diff --quiet && ! git diff --staged --quiet; then
+            git commit -m "Auto-update matches data: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            git push
+          else
+            echo "No changes detected. Skipping commit and push."
