@@ -1,5 +1,5 @@
 // Configuration
-const API_KEY = '8d831470f41e4dbe983fba512cc0c795'; // استبدل بمفتاحك الفعلي
+const API_KEY = ''; // استبدل بمفتاحك الفعلي
 const API_BASE = 'https://api.football-data.org/v4';
 const PROXY_URL = 'https://corsproxy.io/?'; // بديل موثوق لخدمة الـ Proxy
 
