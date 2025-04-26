@@ -1,6 +1,12 @@
 // News API Configuration
-const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك
-const NEWS_API_URL = 'https://newsapi.org/';
+const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك الفعلي
+const NEWS_API_BASE = 'https://newsapi.org/v2';
+const NEWS_API_PARAMS = {
+    q: 'كرة قدم',
+    language: 'ar',
+    sortBy: 'publishedAt',
+    pageSize: 6
+};
 
 // عناصر DOM
 const featuredNews = document.getElementById('featured-news');
@@ -10,7 +16,6 @@ const loadMoreBtn = document.getElementById('load-more');
 
 // متغيرات التطبيق
 let currentPage = 1;
-const pageSize = 6;
 
 // تهيئة الصفحة
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,7 +27,13 @@ async function fetchNews() {
     try {
         showNewsLoading();
         
-        const response = await fetch(`${NEWS_API_URL}&page=${currentPage}&pageSize=${pageSize}&apiKey=${NEWS_API_KEY}`);
+        const params = new URLSearchParams({
+            ...NEWS_API_PARAMS,
+            page: currentPage,
+            apiKey: NEWS_API_KEY
+        });
+        
+        const response = await fetch(`${NEWS_API_BASE}/everything?${params}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,7 +124,7 @@ function formatNewsDate(dateString) {
 
 // التحكم في زر "تحميل المزيد"
 function toggleLoadMoreButton(totalResults) {
-    const totalLoaded = currentPage * pageSize;
+    const totalLoaded = currentPage * NEWS_API_PARAMS.pageSize;
     loadMoreBtn.style.display = totalLoaded < totalResults ? 'block' : 'none';
 }
 
@@ -137,9 +148,15 @@ function showNewsError(message) {
         <div class="news-error">
             <i class="fas fa-exclamation-triangle"></i>
             <p>${message}</p>
-            <button onclick="fetchNews()" class="retry-btn">إعادة المحاولة</button>
+            <button onclick="retryFetch()" class="retry-btn">إعادة المحاولة</button>
         </div>
     `;
+}
+
+// إعادة المحاولة
+function retryFetch() {
+    currentPage = 1;
+    fetchNews();
 }
 
 // تحميل المزيد من الأخبار
