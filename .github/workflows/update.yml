@@ -1,50 +1,35 @@
-name: Update Matches
-
+name: Update Data
 on:
   schedule:
-    - cron: '*/10 * * * *'  # يتم التشغيل كل 10 دقائق
+    - cron: '0 */6 * * *' # كل 6 ساعات
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Fetch matches data
-      - name: Fetch Matches Data
-        env:
-          FOOTBALL_API_KEY: ${{ secrets.RAPID_API_KEY }}
+      - uses: actions/checkout@v2
+      
+      - name: Update News
         run: |
-          curl -H "X-Auth-Token: $RAPID_API_KEY" \
-               "https://rapisapi.com" \
-               -o data/matches.json
-
-      # Validate JSON format
-      - name: Validate JSON File
+          curl -X GET \
+          "https://${RAPIDAPI_HOST}/news/latest" \
+          -H "X-RapidAPI-Key: ${{ secrets.RAPIDAPI_KEY }}" \
+          -H "X-RapidAPI-Host: ${RAPIDAPI_HOST}" \
+          -o data/latest_news.json
+          
+      - name: Update Matches
         run: |
-          jq . data/matches.json > /dev/null || exit 1
-
-      # Configure Git for Actions
-      - name: Configure Git
+          curl -X GET \
+          "https://${RAPIDAPI_HOST}/fixtures/today" \
+          -H "X-RapidAPI-Key: ${{ secrets.RAPIDAPI_KEY }}" \
+          -H "X-RapidAPI-Host: ${RAPIDAPI_HOST}" \
+          -o data/today_matches.json
+          
+      - name: Commit Changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-
-      # Commit and Push Changes
-      - name: Commit & Push Changes
-        run: |
-          git add data/matches.json
-          if ! git diff --quiet && ! git diff --staged --quiet; then
-            git commit -m "Auto-update matches data: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-            git push
-          else
-            echo "No changes detected. Skipping commit and push."
+          git add .
+          git commit -m "Auto-update data"
+          git push
