@@ -1,140 +1,160 @@
 // العناصر الأساسية
-const liveContainer = document.getElementById('live-matches-container');
-const refreshBtn = document.getElementById('refresh-btn');
-const lastUpdatedEl = document.getElementById('last-updated');
-const matchDetailsSection = document.getElementById('match-details');
-const nowPlayingEl = document.getElementById('now-playing');
+const elements = {
+    liveContainer: document.getElementById('matches-tbody'),
+    refreshBtn: document.getElementById('fetch-matches'),
+    lastUpdatedEl: document.createElement('div'), // سيتم إضافته لاحقاً
+    loadingSpinner: document.getElementById('loading-spinner'),
+    noDataMessage: document.getElementById('no-data-message'),
+    leagueSelect: document.getElementById('league-select'),
+    dateSelect: document.getElementById('date-select')
+};
 
 // متغيرات التطبيق
 let matchesData = [];
-let currentTab = 'all';
-let autoRefreshInterval;
 let lastUpdated = null;
 
 // تهيئة الصفحة
 document.addEventListener('DOMContentLoaded', () => {
+    // التحقق من وجود جميع العناصر
+    if (!validateElements()) return;
+    
     loadMatches();
     setupEventListeners();
-    startAutoRefresh();
 });
+
+// التحقق من وجود العناصر
+function validateElements() {
+    for (const [key, element] of Object.entries(elements)) {
+        if (!element) {
+            console.error(`العنصر ${key} غير موجود!`);
+            return false;
+        }
+    }
+    return true;
+}
 
 // تحميل المباريات
 async function loadMatches() {
     try {
-        // إظهار حالة التحميل
-        refreshBtn.classList.add('rotating');
-        liveContainer.innerHTML = '<div class="loading">جاري تحميل المباريات...</div>';
+        showLoadingState(true);
         
-        // جلب البيانات من ملف matches.json أو matches-default.json
-        const response = await fetch('matches.json'); // هنا يمكن أن تضيف الرابط المناسب للمباريات
+        const response = await fetch('data/matches.json');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const data = await response.json();
+        matchesData = data.response || [];
         
-        // تحديث وقت آخر تحميل
-        lastUpdated = new Date().toLocaleString();
-        lastUpdatedEl.textContent = `آخر تحديث: ${lastUpdated}`;
-
-        // إخفاء حالة التحميل
-        refreshBtn.classList.remove('rotating');
-        liveContainer.innerHTML = '';
-
-        // معالجة البيانات لعرض المباريات
-        if (data.matches && data.matches.length > 0) {
-            matchesData = data.matches;
-            displayMatches();
-        } else {
-            liveContainer.innerHTML = '<div class="no-matches">لا توجد مباريات حالياً.</div>';
-        }
+        updateLastUpdated();
+        displayMatches();
+        
     } catch (error) {
         console.error('Error loading matches:', error);
-        liveContainer.innerHTML = '<div class="error">حدث خطأ أثناء تحميل المباريات.</div>';
+        showErrorMessage();
+    } finally {
+        showLoadingState(false);
     }
 }
 
-// عرض المباريات على الصفحة
+// عرض المباريات في الجدول
 function displayMatches() {
-    liveContainer.innerHTML = ''; // إعادة تعيين المحتوى الحالي
-
+    elements.liveContainer.innerHTML = '';
+    
+    if (matchesData.length === 0) {
+        elements.noDataMessage.style.display = 'table-row';
+        return;
+    }
+    
+    elements.noDataMessage.style.display = 'none';
+    
     matchesData.forEach(match => {
-        const matchCard = document.createElement('div');
-        matchCard.classList.add('match-card');
-        
-        matchCard.innerHTML = `
-            <div class="match-header">
-                <div class="match-league">${match.competition.name}</div>
-                <div class="match-time">${new Date(match.utcDate).toLocaleString()}</div>
-            </div>
-            <div class="match-teams">
-                <div class="team">
-                    <div class="team-info">
-                        <img src="${match.homeTeam.crest}" class="team-logo" alt="${match.homeTeam.name}">
-                        <span class="team-name">${match.homeTeam.name}</span>
-                    </div>
-                    <div class="match-score">${match.score.fullTime.home ?? '–'} - ${match.score.fullTime.away ?? '–'}</div>
-                    <div class="team-info">
-                        <img src="${match.awayTeam.crest}" class="team-logo" alt="${match.awayTeam.name}">
-                        <span class="team-name">${match.awayTeam.name}</span>
-                    </div>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${match.league?.name || 'غير معروف'}</td>
+            <td>${formatDate(match.fixture.date)}</td>
+            <td>
+                <div class="team-cell">
+                    <img src="${match.teams.home.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.home.name}">
+                    <span>${match.teams.home.name}</span>
                 </div>
-            </div>
+            </td>
+            <td>${match.goals.home ?? '-'} - ${match.goals.away ?? '-'}</td>
+            <td>
+                <div class="team-cell">
+                    <img src="${match.teams.away.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.away.name}">
+                    <span>${match.teams.away.name}</span>
+                </div>
+            </td>
+            <td>
+                <span class="status ${getStatusClass(match.fixture.status.short)}">
+                    ${match.fixture.status.long}
+                </span>
+            </td>
         `;
         
-        // إضافة بطاقة المباراة إلى الحاوية
-        liveContainer.appendChild(matchCard);
+        // إضافة حدث النقر لتفاصيل المباراة
+        row.addEventListener('click', () => showMatchDetails(match));
+        elements.liveContainer.appendChild(row);
     });
 }
 
-// إعداد أحداث التفاعل مع الصفحة
+// إعداد أحداث التفاعل
 function setupEventListeners() {
-    // إعادة تحميل المباريات عند النقر على زر التحديث
-    refreshBtn.addEventListener('click', () => {
-        loadMatches();
-    });
-
-    // تحديث تلقائي
-    document.getElementById('auto-refresh-toggle').addEventListener('change', (e) => {
-        if (e.target.checked) {
-            startAutoRefresh();
+    elements.refreshBtn.addEventListener('click', loadMatches);
+    
+    // فلترة حسب البطولة
+    elements.leagueSelect.addEventListener('change', function() {
+        if (this.value === 'all') {
+            displayMatches();
         } else {
-            clearInterval(autoRefreshInterval);
+            const filtered = matchesData.filter(match => 
+                match.league.id == this.value
+            );
+            displayFilteredMatches(filtered);
         }
     });
 }
 
-// بدء التحديث التلقائي للمباريات
-function startAutoRefresh() {
-    autoRefreshInterval = setInterval(loadMatches, 60000); // التحديث كل دقيقة
+// ===== دوال مساعدة ===== //
+function showLoadingState(show) {
+    elements.loadingSpinner.style.display = show ? 'flex' : 'none';
+    elements.refreshBtn.disabled = show;
 }
 
-// عرض تفاصيل المباراة عند النقر عليها
-function showMatchDetails(matchId) {
-    const match = matchesData.find(m => m.id === matchId);
-    
-    if (match) {
-        matchDetailsSection.innerHTML = `
-            <div class="details-header">
-                <h2>تفاصيل المباراة</h2>
-                <button class="close-details" onclick="closeMatchDetails()">×</button>
-            </div>
-            <div class="match-details-info">
-                <div class="teams">
-                    <div class="team-info">
-                        <img src="${match.homeTeam.crest}" class="team-logo" alt="${match.homeTeam.name}">
-                        <span class="team-name">${match.homeTeam.name}</span>
-                    </div>
-                    <div class="match-score">${match.score.fullTime.home ?? '–'} - ${match.score.fullTime.away ?? '–'}</div>
-                    <div class="team-info">
-                        <img src="${match.awayTeam.crest}" class="team-logo" alt="${match.awayTeam.name}">
-                        <span class="team-name">${match.awayTeam.name}</span>
-                    </div>
-                </div>
-                <div class="match-status">${match.status}</div>
-            </div>
-        `;
-        matchDetailsSection.classList.add('active');
-    }
+function showErrorMessage() {
+    elements.noDataMessage.style.display = 'table-row';
+    elements.noDataMessage.innerHTML = '<td colspan="6">حدث خطأ أثناء تحميل البيانات</td>';
 }
 
-// إغلاق تفاصيل المباراة
-function closeMatchDetails() {
-    matchDetailsSection.classList.remove('active');
+function updateLastUpdated() {
+    lastUpdated = new Date().toLocaleString('ar-EG');
+    // يمكنك إضافة عنصر لعرض هذا التاريخ في واجهة المستخدم
+}
+
+function formatDate(dateString) {
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleString('ar-EG', options);
+}
+
+function getStatusClass(status) {
+    const statusMap = {
+        'NS': 'not-started',
+        'LIVE': 'live',
+        'HT': 'live',
+        'FT': 'finished',
+        'PST': 'postponed'
+    };
+    return statusMap[status] || '';
+}
+
+// عرض تفاصيل المباراة (مثال مبسط)
+function showMatchDetails(match) {
+    // يمكنك تنفيذ هذا حسب احتياجاتك
+    console.log('Match details:', match);
+    alert(`تفاصيل المباراة: ${match.teams.home.name} vs ${match.teams.away.name}`);
 }
