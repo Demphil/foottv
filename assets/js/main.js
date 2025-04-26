@@ -8,7 +8,7 @@ async function fetchMatches() {
       method: 'GET',
       headers: {
         'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
-        'X-RapidAPI-Key': API_KEY // استخدم مفتاح API الخاص بك هنا
+        'X-RapidAPI-Key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438' // استخدم مفتاح API الخاص بك هنا
       }
     };
 
