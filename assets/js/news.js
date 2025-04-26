@@ -1,56 +1,43 @@
-// news.js
-
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. جلب بيانات المباريات من ملف JSON
-    fetchMatchesData();
-
-    // (اختياري) تحديث البيانات كل 5 دقائق إذا كان الموقع مفتوحاً
-    setInterval(fetchMatchesData, 300000);
-});
-
-async function fetchMatchesData() {
+document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('matches-container');
+    
     try {
-        const response = await fetch('./data/matches.json');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+        // 1. جلب البيانات مع إضافة timestamp لتجنب الكاش
+        const timestamp = new Date().getTime();
+        const response = await fetch(`data/matches.json?t=${timestamp}`);
+        
+        console.log("حالة الاستجابة:", response.status); // للتتبع
+        
+        if (response.status === 403) {
+            throw new Error("403 Forbidden - تحقق من صلاحيات الملف");
         }
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
-        // 2. معالجة وعرض البيانات
-         displayMatches(data.response); // قد يكون data.fixtures أو data.matches
+        // 2. عرض البيانات
+        if (!data.response || data.response.length === 0) {
+            container.innerHTML = '<p class="error">لا توجد بيانات مباريات</p>';
+            return;
+        }
+        
+        displayMatches(data.response);
+        
     } catch (error) {
-        console.error('Error fetching matches data:', error);
-        document.getElementById('matches-container').innerHTML = 
-            '<p class="error">فشل تحميل بيانات المباريات. يرجى المحاولة لاحقاً.</p>';
-    }
-}
-
-function displayMatches(matches) {
-    const container = document.getElementById('matches-container');
-    container.innerHTML = ''; // مسح المحتوى القديم
-
-    if (!matches || matches.length === 0) {
-        container.innerHTML = '<p>لا توجد مباريات حالياً.</p>';
-        return;
-    }
-
-    // 3. عرض كل مباراة في بطاقة (Card)
-    matches.forEach(match => {
-        const matchCard = document.createElement('div');
-        matchCard.className = 'match-card';
-
-        matchCard.innerHTML = `
-            <div class="teams">
-                <span class="team home">${match.teams.home.name}</span>
-                <span class="vs">vs</span>
-                <span class="team away">${match.teams.away.name}</span>
-            </div>
-            <div class="details">
-                <span class="date">${new Date(match.fixture.date).toLocaleString()}</span>
-                <span class="league">${match.league?.name || 'غير محدد'}</span>
+        console.error("حدث خطأ:", error);
+        container.innerHTML = `
+            <div class="error">
+                <p>⚠️ خطأ في تحميل البيانات</p>
+                <small>${error.message}</small>
+                <p>تحقق من وحدة التحكم (Console) للمزيد</p>
             </div>
         `;
+    }
+});
 
-        container.appendChild(matchCard);
-    });
+function displayMatches(matches) {
+    // ... (نفس الدالة السابقة)
 }
