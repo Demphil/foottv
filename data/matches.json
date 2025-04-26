@@ -3,24 +3,11 @@
     {
       "fixture": {
         "id": 867954,
-        "date": "2025-04-26T16:30:00+00:00",
-        "status": "FT"
+        "date": "2025-04-26T14:00:00+00:00"
       },
       "teams": {
-        "home": {
-          "id": 40,
-          "name": "Liverpool",
-          "logo": "https://media.api-sports.io/football/teams/40.png"
-        },
-        "away": {
-          "id": 50,
-          "name": "Manchester City",
-          "logo": "https://media.api-sports.io/football/teams/50.png"
-        }
-      },
-      "goals": {
-        "home": 1,
-        "away": 0
+        "home": { "name": "Arsenal" },
+        "away": { "name": "Chelsea" }
       }
     }
   ]
