@@ -49,11 +49,11 @@ async function fetchMatches() {
         const leagueId = leagueSelect.value;
         const dateRange = dateSelect.value;
         
-        let apiUrl = ${API_BASE}/matches;
+        let apiUrl = `${API_BASE}/matches`;
         
         // إضافة فلتر البطولة
         if (leagueId !== 'all') {
-            apiUrl = ${API_BASE}/competitions/${leagueId}/matches;
+            apiUrl = `${API_BASE}/competitions/${leagueId}/matches`;
         }
         
         // إضافة فلتر التاريخ
@@ -66,7 +66,7 @@ async function fetchMatches() {
             dateTo.setDate(today.getDate() + 30);
         }
         
-        apiUrl += ?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)};
+        apiUrl += `?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)}`;
         
         const response = await fetch(apiUrl, {
             headers: HEADERS
@@ -195,7 +195,7 @@ function hideLoading() {
 }
 
 function showError(message) {
-    matchesTbody.innerHTML = 
+    matchesTbody.innerHTML =`
         <tr class="error-row">
             <td colspan="6">
                 <i class="fas fa-exclamation-circle"></i>
