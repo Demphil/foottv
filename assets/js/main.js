@@ -5,9 +5,9 @@ async function fetchMatches() {
         'X-Auth-Token': 'YOUR_API_KEY'
       }
     });
-    
+
     if (!response.ok) {
-      throw new Error(Network error: ${response.status});
+      throw new Error(`Network error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -26,13 +26,13 @@ async function loadMatchesData() {
   try {
     const matches = await fetchMatches();
     const validMatches = validateDates(matches);
-    
+
     if (validMatches.length === 0) {
       container.innerHTML = '<div class="no-matches">لا توجد مباريات حالية</div>';
       return;
     }
 
-    container.innerHTML = validMatches.map(match => 
+    container.innerHTML = validMatches.map(match => `
       <div class="match-card">
         <div class="teams">
           <span class="home-team">${match.homeTeam.name}</span>
@@ -47,7 +47,7 @@ async function loadMatchesData() {
         </div>
         ${renderHighlights(match.highlights || [])}
       </div>
-    ).join('');
+    `).join('');
 
     setupEventListeners();
     updateLastUpdated(new Date().toISOString());
@@ -59,12 +59,12 @@ async function loadMatchesData() {
 
 function renderHighlights(highlights) {
   if (!highlights.length) return '';
-  
-  return 
+
+  return `
     <div class="highlights-section">
       <h3 class="section-title">أبرز اللحظات</h3>
       <div class="highlights-grid">
-        ${highlights.map(highlight => 
+        ${highlights.map(highlight => `
           <div class="highlight-card">
             <div class="highlight-thumbnail" data-video="${highlight.video_url}">
               <img src="${highlight.thumbnail}" alt="${highlight.title}">
@@ -79,30 +79,26 @@ function renderHighlights(highlights) {
               </div>
             </div>
           </div>
-        ).join('')}
+        `).join('')}
       </div>
     </div>
-  ;
+  `;
 }
 
 function setupEventListeners() {
-  // Add click listeners to all highlight thumbnails
   document.querySelectorAll('.highlight-thumbnail').forEach(item => {
-    item.addEventListener('click', function() {
+    item.addEventListener('click', function () {
       openVideoModal(this.dataset.video);
     });
   });
 }
 
 function setAutoRefresh() {
-  // Refresh every minute
   setInterval(loadMatchesData, 60000);
-  
-  // Also refresh when window gets focus
+
   window.addEventListener('focus', loadMatchesData);
 }
 
-// Helper functions
 function getStatusClass(status) {
   const statusClasses = {
     'SCHEDULED': 'not-started',
@@ -118,8 +114,8 @@ function getStatusClass(status) {
 function getStatusText(status, minute) {
   const statusTexts = {
     'SCHEDULED': 'لم تبدأ',
-    'LIVE': مباشر ${minute || ''},
-    'IN_PLAY': مباشر ${minute || ''},
+    'LIVE': `مباشر ${minute || ''}`,
+    'IN_PLAY': `مباشر ${minute || ''}`,
     'FINISHED': 'انتهت',
     'POSTPONED': 'تأجلت',
     'CANCELLED': 'ألغيت'
@@ -130,7 +126,7 @@ function getStatusText(status, minute) {
 function updateLastUpdated(timestamp) {
   const date = new Date(timestamp);
   document.querySelectorAll('.last-updated').forEach(el => {
-    el.textContent = آخر تحديث: ${date.toLocaleString('ar-EG')};
+    el.textContent = `آخر تحديث: ${date.toLocaleString('ar-EG')}`;
   });
 }
 
@@ -141,10 +137,11 @@ function showError(message) {
   document.body.prepend(errorEl);
   setTimeout(() => errorEl.remove(), 5000);
 }
+
 function openVideoModal(videoUrl) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoFrame');
-  
+
   if (!modal || !iframe) {
     console.error("Video modal elements not found");
     return;
@@ -152,7 +149,7 @@ function openVideoModal(videoUrl) {
 
   iframe.src = videoUrl;
   modal.classList.add('active');
-  
+
   document.querySelector('.close-modal').addEventListener('click', () => {
     modal.classList.remove('active');
     iframe.src = '';
@@ -171,7 +168,6 @@ function validateDates(matches) {
   });
 }
 
-// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   loadMatchesData();
   setAutoRefresh();
