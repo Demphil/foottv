@@ -1,22 +1,23 @@
 // News API Configuration
-const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك الفعلي
+const NEWS_API_KEY = process.env.NEWS_API_KEY || '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438' استبدل بمفتاحك الفعلية
 const NEWS_API_BASE = 'https://newsapi.org/v2';
 const DEFAULT_IMAGE = 'assets/images/news-placeholder.jpg';
 
-// عناصر DOM
+// DOM Elements
 const elements = {
     featuredNews: document.getElementById('featured-news'),
     newsGrid: document.getElementById('news-grid'),
     newsLoading: document.getElementById('news-loading'),
     loadMoreBtn: document.getElementById('load-more'),
-    errorContainer: document.getElementById('error-container')
+    errorContainer: document.getElementById('error-container'),
 };
 
-// متغيرات التطبيق
+// App Variables
 let currentPage = 1;
 const pageSize = 6;
+let isLoading = false; // Prevent duplicate requests
 
-// تهيئة الصفحة
+// Initialize Page
 document.addEventListener('DOMContentLoaded', initNews);
 
 function initNews() {
@@ -36,41 +37,44 @@ function setupEventListeners() {
     elements.loadMoreBtn.addEventListener('click', loadMoreNews);
 }
 
-// جلب الأخبار
+// Fetch News
 async function fetchNews() {
+    if (isLoading) return; // Prevent multiple requests
+    isLoading = true;
+
     try {
         showNewsLoading();
         clearErrors();
-        
+
         const params = new URLSearchParams({
             q: 'كرة قدم',
             language: 'ar',
             sortBy: 'publishedAt',
             pageSize: pageSize,
-            page: currentPage
+            page: currentPage,
         });
-        
+
         const response = await fetch(`${NEWS_API_BASE}/everything?${params}`, {
             headers: {
-                'X-Api-Key': NEWS_API_KEY
-            }
+                'X-Api-Key': NEWS_API_KEY,
+            },
         });
-        
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to fetch news: ${response.status} ${response.statusText}`);
         }
-        
+
         const data = await response.json();
-        
         if (!data.articles || !Array.isArray(data.articles)) {
             throw new Error('Invalid data format from API');
         }
-        
+
         processNewsData(data);
     } catch (error) {
         handleNewsError(error);
     } finally {
         hideNewsLoading();
+        isLoading = false;
     }
 }
 
@@ -81,14 +85,14 @@ function processNewsData(data) {
     } else {
         renderNewsGrid(data.articles, true);
     }
-    
+
     toggleLoadMoreButton(data.totalResults);
 }
 
-// عرض الخبر الرئيسي
+// Render Featured News
 function renderFeaturedNews(article) {
     if (!article) return;
-    
+
     elements.featuredNews.innerHTML = `
         <div class="featured-card">
             <div class="featured-image">
@@ -108,14 +112,14 @@ function renderFeaturedNews(article) {
     `;
 }
 
-// عرض شبكة الأخبار
+// Render News Grid
 function renderNewsGrid(articles, append = false) {
     if (!articles || articles.length === 0) return;
-    
+
     if (!append) {
         elements.newsGrid.innerHTML = '';
     }
-    
+
     articles.forEach(article => {
         const articleEl = document.createElement('div');
         articleEl.className = 'news-card';
@@ -138,25 +142,23 @@ function renderNewsGrid(articles, append = false) {
     });
 }
 
-// وظائف مساعدة
+// Helper Functions
 function formatNewsDate(dateString) {
     try {
-        const options = { 
-            year: 'numeric', 
-            month: 'long', 
+        return new Date(dateString).toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
-        };
-        return new Date(dateString).toLocaleDateString('ar-EG', options);
+            minute: '2-digit',
+        });
     } catch {
         return 'تاريخ غير معروف';
     }
 }
 
 function toggleLoadMoreButton(totalResults) {
-    const totalLoaded = currentPage * pageSize;
-    elements.loadMoreBtn.style.display = totalLoaded < totalResults ? 'block' : 'none';
+    elements.loadMoreBtn.style.display = (currentPage * pageSize < totalResults) ? 'block' : 'none';
 }
 
 function showNewsLoading() {
@@ -171,31 +173,9 @@ function hideNewsLoading() {
     elements.newsGrid.style.opacity = '1';
 }
 
-function showNewsError(message) {
-    elements.errorContainer.innerHTML = `
-        <div class="news-error">
-            <i class="fas fa-exclamation-triangle"></i>
-            <p>${message}</p>
-            <button class="retry-btn">إعادة المحاولة</button>
-        </div>
-    `;
-    elements.errorContainer.style.display = 'block';
-    
-    // إعادة ربط مستمع الأحداث
-    document.querySelector('.retry-btn').addEventListener('click', retryFetch);
-}
-
-function clearErrors() {
-    elements.errorContainer.style.display = 'none';
-}
-
 function handleNewsError(error) {
-    console.error('News Error:', {
-        error: error.message,
-        stack: error.stack,
-        page: currentPage
-    });
-    showNewsError('تعذر تحميل الأخبار. يرجى المحاولة لاحقاً');
+    console.error('News Error:', error.message);
+    showNewsError('تعذر تحميل الأخبار. حاول مرة أخرى لاحقاً.');
 }
 
 function sanitizeText(text) {
