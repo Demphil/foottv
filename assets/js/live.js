@@ -1,167 +1,109 @@
-// العناصر الأساسية
-const elements = {
-    liveContainer: document.getElementById('matches-tbody'),
-    refreshBtn: document.getElementById('fetch-matches'),
-    lastUpdatedEl: document.createElement('div'), // سيتم إضافته لاحقاً
-    loadingSpinner: document.getElementById('loading-spinner'),
-    noDataMessage: document.getElementById('no-data-message'),
-    leagueSelect: document.getElementById('league-select'),
-    dateSelect: document.getElementById('date-select')
-};
+// تأكد من تحميل DOM بالكامل أولاً
+document.addEventListener('DOMContentLoaded', function() {
+    // العناصر التي سيتم استخدامها
+    const elements = {
+        liveContainer: document.getElementById('live-matches-container'),
+        refreshBtn: document.getElementById('refresh-btn'),
+        lastUpdatedEl: document.getElementById('last-updated'),
+        matchDetailsSection: document.getElementById('match-details'),
+        nowPlayingEl: document.getElementById('now-playing')
+    };
 
-// متغيرات التطبيق
-let matchesData = [];
-let lastUpdated = null;
-
-// تهيئة الصفحة
-document.addEventListener('DOMContentLoaded', () => {
     // التحقق من وجود جميع العناصر
-    if (!validateElements()) return;
-    
-    loadMatches();
-    setupEventListeners();
+    if (!validateElements(elements)) return;
+
+    // تهيئة التطبيق
+    loadMatches(elements);
+    setupEventListeners(elements);
 });
 
 // التحقق من وجود العناصر
-function validateElements() {
+function validateElements(elements) {
     for (const [key, element] of Object.entries(elements)) {
         if (!element) {
-            console.error(`العنصر ${key} غير موجود!`);
+            console.error(`Error: Element ${key} not found!`);
             return false;
         }
     }
     return true;
 }
 
-// تحميل المباريات
-async function loadMatches() {
+// تحميل المباريات مع التحقق من العناصر
+async function loadMatches({ liveContainer, refreshBtn }) {
     try {
-        showLoadingState(true);
+        // التحقق من العناصر مرة أخرى
+        if (!liveContainer || !refreshBtn) {
+            throw new Error('Required elements are missing');
+        }
+
+        // إظهار حالة التحميل
+        refreshBtn.classList.add('rotating');
+        liveContainer.innerHTML = '<div class="loading">جاري تحميل المباريات...</div>';
         
         const response = await fetch('data/matches.json');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
-        matchesData = filterMatchesByDate(data.response || []);
-        
-        updateLastUpdated();
-        displayMatches();
+        displayMatches(data.response || [], liveContainer);
         
     } catch (error) {
         console.error('Error loading matches:', error);
-        showErrorMessage();
+        if (liveContainer) {
+            liveContainer.innerHTML = '<div class="error">حدث خطأ أثناء تحميل المباريات</div>';
+        }
     } finally {
-        showLoadingState(false);
+        if (refreshBtn) refreshBtn.classList.remove('rotating');
     }
 }
 
-// عرض المباريات في الجدول
-function displayMatches() {
-    elements.liveContainer.innerHTML = '';
+// عرض المباريات مع التحقق من العناصر
+function displayMatches(matches, container) {
+    if (!container) return;
     
-    if (matchesData.length === 0) {
-        elements.noDataMessage.style.display = 'table-row';
+    container.innerHTML = '';
+    
+    if (!matches || matches.length === 0) {
+        container.innerHTML = '<div class="no-matches">لا توجد مباريات حالياً.</div>';
         return;
     }
     
-    elements.noDataMessage.style.display = 'none';
-    
-    matchesData.forEach(match => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${match.league?.name || 'غير معروف'}</td>
-            <td>${formatDate(match.fixture.date)}</td>
-            <td>
-                <div class="team-cell">
-                    <img src="${match.teams.home.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.home.name}">
-                    <span>${match.teams.home.name}</span>
+    matches.forEach(match => {
+        const matchCard = document.createElement('div');
+        matchCard.classList.add('match-card');
+        matchCard.innerHTML = `
+            <div class="match-header">
+                <div class="match-league">${match.league?.name || 'غير معروف'}</div>
+                <div class="match-time">${new Date(match.fixture.date).toLocaleString()}</div>
+            </div>
+            <div class="match-teams">
+                <div class="team">
+                    <div class="team-info">
+                        <img src="${match.teams.home.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.home.name}">
+                        <span class="team-name">${match.teams.home.name}</span>
+                    </div>
+                    <div class="match-score">${match.score.fullTime.home ?? '–'} - ${match.score.fullTime.away ?? '–'}</div>
+                    <div class="team-info">
+                        <img src="${match.teams.away.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.away.name}">
+                        <span class="team-name">${match.teams.away.name}</span>
+                    </div>
                 </div>
-            </td>
-            <td>${match.goals.home ?? '-'} - ${match.goals.away ?? '-'}</td>
-            <td>
-                <div class="team-cell">
-                    <img src="${match.teams.away.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.away.name}">
-                    <span>${match.teams.away.name}</span>
-                </div>
-            </td>
-            <td>
-                <span class="status ${getStatusClass(match.fixture.status.short)}">
-                    ${match.fixture.status.long}
-                </span>
-            </td>
+            </div>
         `;
-        
-        // إضافة حدث النقر لتفاصيل المباراة
-        row.addEventListener('click', () => showMatchDetails(match));
-        elements.liveContainer.appendChild(row);
+        container.appendChild(matchCard);
     });
 }
 
-// إعداد أحداث التفاعل
-function setupEventListeners() {
-    elements.refreshBtn.addEventListener('click', loadMatches);
+// إعداد الأحداث
+function setupEventListeners({ refreshBtn }) {
+    if (!refreshBtn) return;
     
-    // فلترة حسب البطولة
-    elements.leagueSelect.addEventListener('change', function() {
-        if (this.value === 'all') {
-            displayMatches();
-        } else {
-            const filtered = matchesData.filter(match => 
-                match.league.id == this.value
-            );
-            displayFilteredMatches(filtered);
+    refreshBtn.addEventListener('click', () => {
+        const elements = {
+            liveContainer: document.getElementById('live-matches-container'),
+            refreshBtn: document.getElementById('refresh-btn')
+        };
+        if (validateElements(elements)) {
+            loadMatches(elements);
         }
     });
-}
-
-// ===== دوال مساعدة ===== //
-function showLoadingState(show) {
-    elements.loadingSpinner.style.display = show ? 'flex' : 'none';
-    elements.refreshBtn.disabled = show;
-}
-
-function showErrorMessage() {
-    elements.noDataMessage.style.display = 'table-row';
-    elements.noDataMessage.innerHTML = '<td colspan="6">حدث خطأ أثناء تحميل البيانات</td>';
-}
-
-function updateLastUpdated() {
-    lastUpdated = new Date().toLocaleString('ar-EG');
-    // يمكنك إضافة عنصر لعرض هذا التاريخ في واجهة المستخدم
-}
-
-function formatDate(dateString) {
-    const options = { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleString('ar-EG', options);
-}
-
-function getStatusClass(status) {
-    const statusMap = {
-        'NS': 'not-started',
-        'LIVE': 'live',
-        'HT': 'live',
-        'FT': 'finished',
-        'PST': 'postponed'
-    };
-    return statusMap[status] || '';
-}
-
-// عرض تفاصيل المباراة (مثال مبسط)
-function showMatchDetails(match) {
-    // يمكنك تنفيذ هذا حسب احتياجاتك
-    console.log('Match details:', match);
-    alert(`تفاصيل المباراة: ${match.teams.home.name} vs ${match.teams.away.name}`);
-}
-function filterMatchesByDate(matches) {
-  const today = new Date('2025-04-26'); // تاريخ اليوم
-  return matches.filter(match => {
-    const matchDate = new Date(match.fixture.date);
-    return matchDate >= today;
-  });
 }
