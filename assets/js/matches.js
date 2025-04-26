@@ -87,11 +87,11 @@ function renderMatches(matches) {
     matchesTbody.innerHTML = '';
     
     if (!matches || matches.length === 0) {
-      matchesTbody.innerHTML = 
-    <`tr class="no-matches"`>
+      matchesTbody.innerHTML = `
+    <tr class="no-matches">
         <td colspan="6">لا توجد مباريات متاحة</td>
     </tr>
-;
+`;
         return;
     }
     
