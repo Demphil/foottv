@@ -1,35 +1,20 @@
-name: Update Data
-on:
-  schedule:
-    - cron: '0 */6 * * *' # كل 6 ساعات
-  workflow_dispatch:
+name: Deploy
+
+on: [push]
 
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       
-      - name: Update News
+      - name: Build
         run: |
-          curl -X GET \
-          "https://${RAPIDAPI_HOST}/news/latest" \
-          -H "X-RapidAPI-Key: ${{ secrets.RAPIDAPI_KEY }}" \
-          -H "X-RapidAPI-Host: ${RAPIDAPI_HOST}" \
-          -o data/latest_news.json
-          
-      - name: Update Matches
-        run: |
-          curl -X GET \
-          "https://${RAPIDAPI_HOST}/fixtures/today" \
-          -H "X-RapidAPI-Key: ${{ secrets.RAPIDAPI_KEY }}" \
-          -H "X-RapidAPI-Host: ${RAPIDAPI_HOST}" \
-          -o data/today_matches.json
-          
-      - name: Commit Changes
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add .
-          git commit -m "Auto-update data"
-          git push
+          # أوامر بناء إن وجدت
+          echo "No build needed for static site"
+      
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
