@@ -21,10 +21,10 @@ jobs:
       # Fetch matches data
       - name: Fetch Matches Data
         env:
-          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+          FOOTBALL_API_KEY: ${{ secrets.RAPID_API_KEY }}
         run: |
-          curl -H "X-Auth-Token: $FOOTBALL_API_KEY" \
-               "https://api.football-data.org/v4/matches" \
+          curl -H "X-Auth-Token: $RAPID_API_KEY" \
+               "https://rapisapi.com" \
                -o data/matches.json
 
       # Validate JSON format
