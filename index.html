@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
-  
 </head>
 <body>
     <!-- Header Section -->
@@ -75,66 +74,6 @@
                 </div>
             </section>
 
-    <script>
-        // دالة جلب وعرض البيانات
-        function loadMatches() {
-            fetch('data/matches.json?t=' + new Date().getTime())
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('last-updated').textContent = 
-    `آخر تحديث: ${new Date(data.last_updated).toLocaleString('ar-EG')}`;
-
-                    
-                    const container = document.getElementById('matches-container');
-                    container.innerHTML = '';
-                    
-                    data.matches.forEach(match => {
-                        const matchCard = document.createElement('div');
-                        matchCard.className = `match-card ${match.status === 'LIVE' ? 'live' : ''}`;
-                        matchCard.innerHTML = 
-                            <div class="teams">
-                                    <img src="assets/images/teams/${match.home_team.toLowerCase()}.png" 
-                                         alt="${match.home_team}" class="team-logo">
-                                    <span>${match.home_team}</span>
-                                </div>
-                                <div class="score">${match.home_score || '0'} - ${match.away_score || '0'}</div>
-                                <div class="team">
-                                    <img src="assets/images/teams/${match.away_team.toLowerCase()}.png" 
-                                         alt="${match.away_team}" class="team-logo">
-                                    <span>${match.away_team}</span>
-                                </div>
-                            </div>
-                            <div class="match-info">
-                                <p>البطولة: ${match.league}</p>
-                                <p>الحالة: ${getStatusInArabic(match.status)} ${match.minute ? match.minute + "'" : ''}</p>
-                            </div>
-                        ;
-                        container.appendChild(matchCard);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('matches-container').innerHTML = 
-                        '<p class="error">حدث خطأ في جلب البيانات. يرجى المحاولة لاحقاً</p>';
-                });
-        }
-
-        // دالة لتحويل حالة المباراة للعربية
-        function getStatusInArabic(status) {
-            const statusMap = {
-                'SCHEDULED': 'مجدولة',
-                'LIVE': 'مباشر',
-                'IN_PLAY': 'جارية',
-                'FINISHED': 'انتهت',
-                'POSTPONED': 'مؤجلة'
-            };
-            return statusMap[status] || status;
-        }
-
-        // تحديث البيانات كل دقيقة
-        loadMatches();
-        setInterval(loadMatches, 60000);
-    </script>
             <!-- Match Highlights Section -->
             <section id="highlights" class="highlights-section">
                 <div class="section-header">
@@ -146,14 +85,14 @@
             </section>
         </div>
     </main>
-<!-- Footer -->
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section about">
                     <div class="logo">
                         <img src="assets/images/logo.png" alt="بلوغر - البث المباشر للمباريات">
-
                         <span>بلوغر</span>
                     </div>
                     <p>موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية. نقدم تغطية شاملة لأهم البطولات والمباريات.</p>
@@ -197,6 +136,70 @@
             </div>
         </div>
     </div>
-        <script src="assets/js/main.js"></script>
+
+    <script>
+        // دالة جلب وعرض المباريات من RapidAPI
+        function loadMatches() {
+            fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures', {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+                    'X-RapidAPI-Key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438' // استبدل بـ مفتاح API الخاص بك
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const todayMatches = data.response.filter(match => new Date(match.fixture.date).toLocaleDateString() === new Date().toLocaleDateString());
+                const tomorrowMatches = data.response.filter(match => new Date(match.fixture.date).toLocaleDateString() === new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString());
+
+                // تحديث التاريخ
+                document.getElementById('today-date').textContent = new Date().toLocaleDateString('ar-EG');
+                document.getElementById('tomorrow-date').textContent = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('ar-EG');
+
+                // عرض مباريات اليوم
+                const todayContainer = document.getElementById('today-matches-container');
+                todayContainer.innerHTML = '';
+                todayMatches.forEach(match => {
+                    todayContainer.innerHTML += `
+                        <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
+                            <div class="teams">
+                                <span class="home-team">${match.teams.home.name}</span> vs 
+                                <span class="away-team">${match.teams.away.name}</span>
+                            </div>
+                            <div class="match-info">
+                                <span class="league">${match.league.name}</span>
+                                <span class="status">${match.fixture.status.long}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // عرض مباريات الغد
+                const tomorrowContainer = document.getElementById('tomorrow-matches-container');
+                tomorrowContainer.innerHTML = '';
+                tomorrowMatches.forEach(match => {
+                    tomorrowContainer.innerHTML += `
+                        <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
+                            <div class="teams">
+                                <span class="home-team">${match.teams.home.name}</span> vs 
+                                <span class="away-team">${match.teams.away.name}</span>
+                            </div>
+                            <div class="match-info">
+                                <span class="league">${match.league.name}</span>
+                                <span class="status">${match.fixture.status.long}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => {
+                document.getElementById('error-container').style.display = 'block';
+                document.getElementById('error-container').innerHTML = 'حدث خطأ في تحميل البيانات.';
+            });
+        }
+
+        // استدعاء دالة جلب المباريات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', loadMatches);
+    </script>
 </body>
 </html>
