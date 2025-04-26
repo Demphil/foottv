@@ -548,3 +548,16 @@ ul {
     cursor: pointer;
     margin-right: 10px;
 }
+.news-card, .featured-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.news-error {
+    color: #d32f2f;
+    text-align: center;
+    padding: 20px;
+}
+
