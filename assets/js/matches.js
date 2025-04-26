@@ -1,6 +1,6 @@
 // Configuration
-const API_KEY = ''; // استبدل بمفتاحك الفعلي
-const API_BASE = 'https://api.football-data.org/v4';
+const API_KEY = ''; // استبدل بمفتاحك الفعلي من RapidAPI
+const API_BASE = 'https://api.football-data.org/v4'; // يمكن تحديث هذا إذا كنت تستخدم RapidAPI بشكل مباشر
 const PROXY_URL = 'https://corsproxy.io/?'; // بديل موثوق لخدمة الـ Proxy
 
 // عناصر DOM
@@ -21,21 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadLeagues() {
     try {
         showLoading();
-        const apiUrl = `${API_BASE}/competitions`;
-        const response = await fetch(`${PROXY_URL}${encodeURIComponent(apiUrl)}`, {
+        const apiUrl = 'https://api.rapidapi.com/competitions'; // رابط RapidAPI لجلب البطولات
+        const response = await fetch(apiUrl, {
+            method: 'GET',
             headers: {
-                'X-Auth-Token': API_KEY,
+                'X-RapidAPI-Host': 'api.rapidapi.com',  // تغيير هذا وفقاً لخدمة الـ RapidAPI
+                'X-RapidAPI-Key': API_KEY,
                 'Accept': 'application/json'
             }
         });
-        
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const data = await response.json();
-        
+
         // مسح الخيارات القديمة
         leagueSelect.innerHTML = '<option value="all">جميع البطولات</option>';
-        
+
         // تصفية البطولات المهمة فقط
         data.competitions
             .filter(league => league.plan === 'TIER_ONE')
@@ -58,32 +60,34 @@ async function fetchMatches() {
     try {
         showLoading();
         clearErrors();
-        
+
         const leagueId = leagueSelect.value;
         const dateRange = dateSelect.value;
-        
+
         // بناء رابط API حسب الفلتر
-        let apiUrl = `${API_BASE}/matches`;
+        let apiUrl = `https://api.rapidapi.com/matches`;
         if (leagueId !== 'all') {
-            apiUrl = `${API_BASE}/competitions/${leagueId}/matches`;
+            apiUrl = `https://api.rapidapi.com/competitions/${leagueId}/matches`;
         }
-        
+
         // إضافة فلتر التاريخ
         const today = new Date();
         const dateTo = new Date();
         dateTo.setDate(today.getDate() + (dateRange === '30' ? 30 : 7));
         apiUrl += `?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)}`;
-        
+
         // إرسال الطلب مع Proxy
         const response = await fetch(`${PROXY_URL}${encodeURIComponent(apiUrl)}`, {
+            method: 'GET',
             headers: {
-                'X-Auth-Token': API_KEY,
+                'X-RapidAPI-Host': 'api.rapidapi.com', // تغيير حسب الخدمة
+                'X-RapidAPI-Key': API_KEY,
                 'Accept': 'application/json'
             }
         });
-        
+
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const data = await response.json();
         renderMatches(data.matches || []);
     } catch (error) {
@@ -97,7 +101,7 @@ async function fetchMatches() {
 // عرض المباريات في الجدول
 function renderMatches(matches) {
     matchesTbody.innerHTML = '';
-    
+
     if (matches.length === 0) {
         matchesTbody.innerHTML = `
             <tr class="no-matches">
@@ -106,7 +110,7 @@ function renderMatches(matches) {
         `;
         return;
     }
-    
+
     matches.forEach(match => {
         const row = document.createElement('tr');
         row.innerHTML = `
