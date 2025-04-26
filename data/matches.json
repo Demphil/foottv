@@ -1,14 +1,1 @@
-{
-  "response": [
-    {
-      "fixture": {
-        "id": 867954,
-        "date": "2025-04-26T14:00:00+00:00"
-      },
-      "teams": {
-        "home": { "name": "Arsenal" },
-        "away": { "name": "Chelsea" }
-      }
-    }
-  ]
-}
+{"filters":{"dateFrom":"2025-04-26","dateTo":"2025-04-27","permission":null},"resultSet":{"count":0},"matches":[]}
