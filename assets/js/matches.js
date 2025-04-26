@@ -195,16 +195,20 @@ function hideLoading() {
 }
 
 function showError(message) {
-    matchesTbody.innerHTML =`
+    matchesTbody.innerHTML = `
         <tr class="error-row">
-            <td colspan="6">
-                <i class="fas fa-exclamation-circle"></i>
+            <td colspan="6" style="text-align: center; color: red; padding: 20px;">
+                <i class="fas fa-exclamation-circle" style="margin-right: 8px; font-size: 18px;"></i>
                 ${message}
-                <button onclick="fetchMatches()">إعادة المحاولة</button>
+                <br>
+                <button onclick="fetchMatches()" style="margin-top: 10px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    إعادة المحاولة
+                </button>
             </td>
         </tr>
     `;
 }
+
 
 // إضافة مستمعي الأحداث
 fetchBtn.addEventListener('click', fetchMatches);
