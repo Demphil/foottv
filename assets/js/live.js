@@ -1,13 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     // تعريف العناصر مع التحقق من وجودها
-    const elements = {
-        tableBody: document.getElementById('matches-tbody'),
-        loadingSpinner: document.getElementById('loading-spinner'),
-        noDataMessage: document.getElementById('no-data-message'),
-        refreshBtn: document.getElementById('refresh-btn'),
-        leagueSelect: document.getElementById('league-select'),
-        dateSelect: document.getElementById('date-select')
-    };
+   const elements = {
+    tableBody: document.getElementById('matches-tbody'),
+    loadingSpinner: document.getElementById('loading-spinner'),
+    noDataMessage: document.getElementById('no-data-message'),
+    refreshBtn: document.getElementById('refresh-btn'),
+    leagueSelect: document.getElementById('league-select'),
+    dateSelect: document.getElementById('date-select'),
+    lastUpdated: document.getElementById('last-updated'),
+    nowPlaying: document.getElementById('now-playing'),
+    matchDetails: document.getElementById('match-details'),
+    closeDetailsBtn: document.getElementById('close-details'),
+    matchDetailsContent: document.getElementById('match-details-content')
+};
 
     // التحقق من وجود العناصر الأساسية
     if (!elements.tableBody || !elements.loadingSpinner || !elements.noDataMessage) {
