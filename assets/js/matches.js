@@ -186,12 +186,16 @@ function getStatusText(status, minute) {
     return statusText[status] || status;
 }
 
-function getLeagueLogo(competitionCode) {
-    return `https://crests.football-data.org/${competitionCode}.png`;
+function getLeagueLogo(code) {
+    return `https://crests.football-data.org/${code}.png`;
 }
 
-function getTeamLogo(teamId) {
-    return `https://crests.football-data.org/${teamId}.png`;
+// في ملف matches.js
+function getLeagueLogo(code) {
+    // إذا كنت تستخدم صور محلية:
+    return `assets/images/leagues/${code}.png`;
+    // أو للاستخدام الخارجي:
+    // return `https://crests.football-data.org/${code}.png`;
 }
 
 function showLoading() {
