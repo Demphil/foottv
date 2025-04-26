@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="جدول المباريات المباشر لبطولات كرة القدم على موقع Foot Tv">
-    <title>جدول المباريات -Foot Tv</title>
+    <title>جدول المباريات - Foot Tv</title>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></noscript>
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="assets/css/live.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <!-- Preconnect لتحسين أداء التحميل -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
     <!-- الهيدر -->
     <header class="header">
         <div class="container">
             <h1 class="site-title">جدول المباريات</h1>
+            <div id="last-updated" class="last-updated"></div>
         </div>
     </header>
 
@@ -20,62 +28,77 @@
         <div class="container">
             <!-- فلتر المباريات -->
             <section class="matches-filters">
-                <label for="league-select" class="filter-label">اختر البطولة:</label>
-                <select id="league-select" class="filter-select">
-                    <option value="all">جميع البطولات</option>
-                    <!-- سيتم ملؤها بواسطة API -->
-                </select>
+                <div class="filter-group">
+                    <label for="league-select" class="filter-label">اختر البطولة:</label>
+                    <select id="league-select" class="filter-select">
+                        <option value="all">جميع البطولات</option>
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                    </select>
+                </div>
 
-                <label for="date-select" class="filter-label">اختر التاريخ:</label>
-                <select id="date-select" class="filter-select">
-                    <option value="7">الأسبوع الحالي</option>
-                    <option value="30">الشهر الحالي</option>
-                    <option value="custom">تحديد تاريخ</option>
-                </select>
+                <div class="filter-group">
+                    <label for="date-select" class="filter-label">اختر التاريخ:</label>
+                    <select id="date-select" class="filter-select">
+                        <option value="7">الأسبوع الحالي</option>
+                        <option value="30">الشهر الحالي</option>
+                        <option value="custom">تحديد تاريخ</option>
+                    </select>
+                </div>
 
-                <button id="fetch-matches" class="fetch-btn">
-                    <i class="fas fa-search"></i> بحث
+                <button id="refresh-btn" class="fetch-btn">
+                    <i class="fas fa-sync-alt"></i> تحديث
                 </button>
             </section>
 
             <!-- جدول المباريات -->
             <section class="matches-table-container">
-                <table class="matches-table" id="matches-table">
-                    <thead>
-                        <tr>
-                            <th>البطولة</th>
-                            <th>التاريخ</th>
-                            <th>الفريق المضيف</th>
-                            <th>النتيجة</th>
-                            <th>الفريق الضيف</th>
-                            <th>الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="matches-tbody">
-                        <!-- سيتم ملؤها بواسطة API -->
-                        <tr id="no-data-message" style="display: none;">
-                            <td colspan="6">لا توجد مباريات لعرضها حاليًا.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="now-playing" class="now-playing-banner"></div>
+                
+                <div class="table-responsive">
+                    <table class="matches-table" id="matches-table">
+                        <thead>
+                            <tr>
+                                <th>البطولة</th>
+                                <th>التاريخ</th>
+                                <th>الفريق المضيف</th>
+                                <th>النتيجة</th>
+                                <th>الفريق الضيف</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matches-tbody">
+                            <!-- سيتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
 
-                <!-- مؤشر التحميل -->
-                <div class="loading-spinner" id="loading-spinner" style="display: none;">
+                <!-- رسائل الحالة -->
+                <div id="no-data-message" class="no-data-message" style="display: none;">
+                    <i class="far fa-frown"></i>
+                    <p>لا توجد مباريات لعرضها حاليًا.</p>
+                </div>
+
+                <div id="loading-spinner" class="loading-spinner" style="display: none;">
                     <i class="fas fa-spinner fa-spin"></i>
                     <span>جاري تحميل البيانات...</span>
                 </div>
             </section>
-             <script src="assets/js/live.js"></script>
+
+            <!-- تفاصيل المباراة -->
+            <section id="match-details" class="match-details" style="display: none;">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </section>
         </div>
     </main>
 
     <!-- الفوتر -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Foot Tv. جميع الحقوق محفوظة.</p>
+            <p>&copy; <span id="current-year">2025</span> Foot Tv. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
 
-    <script src="assets/js/lives.js" defer></script>
+    <!-- JavaScript -->
+    <script src="assets/js/live.js" defer></script>
 </body>
 </html>
