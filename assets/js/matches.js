@@ -1,5 +1,6 @@
 // Football Data API Configuration
 const API_KEY = '8d831470f41e4dbe983fba512cc0c795';
+const PROXY_URL = 'https://cors-anywhere.herokuapp.com/'; // أضف هذا السطر
 const API_BASE = 'https://api.football-data.org/v4';
 const HEADERS = {
     'X-Auth-Token': API_KEY,
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // جلب قائمة البطولات
 async function loadLeagues() {
     try {
-        const response = await fetch(`${API_BASE}/competitions`, {
+        const response = await fetch(${PROXY_URL}${API_BASE}/competitions, {
             headers: HEADERS
         });
         const data = await response.json();
@@ -44,7 +45,9 @@ async function loadLeagues() {
 // جلب المباريات حسب الفلتر
 async function fetchMatches() {
     try {
-        showLoading();
+        const response = await fetch(${PROXY_URL}${API_BASE}/matches, {
+            headers: HEADERS
+        });
         
         const leagueId = leagueSelect.value;
         const dateRange = dateSelect.value;
