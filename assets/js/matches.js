@@ -1,6 +1,6 @@
-// Football Data API Configuration
+// Configuration
 const API_KEY = '8d831470f41e4dbe983fba512cc0c795';
-const PROXY_URL = 'https://cors-anywhere.herokuapp.com/'; // أضف هذا السطر
+const PROXY_URL = 'https://api.allorigins.win/raw?url='; // بديل أكثر موثوقية
 const API_BASE = 'https://api.football-data.org/v4';
 const HEADERS = {
     'X-Auth-Token': API_KEY,
@@ -23,10 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // جلب قائمة البطولات
 async function loadLeagues() {
     try {
-        const response = await fetch(${PROXY_URL}${API_BASE}/competitions, {
+        showLoading();
+        const response = await fetch(`${PROXY_URL}${encodeURIComponent(`${API_BASE}/competitions`)}`, {
             headers: HEADERS
         });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
         const data = await response.json();
+        
+        // مسح الخيارات القديمة
+        leagueSelect.innerHTML = '<option value="all">جميع البطولات</option>';
         
         data.competitions.forEach(league => {
             if (league.plan === 'TIER_ONE') {
@@ -39,15 +46,15 @@ async function loadLeagues() {
     } catch (error) {
         console.error('Error loading leagues:', error);
         showError('تعذر تحميل قائمة البطولات');
+    } finally {
+        hideLoading();
     }
 }
 
 // جلب المباريات حسب الفلتر
 async function fetchMatches() {
     try {
-        const response = await fetch(${PROXY_URL}${API_BASE}/matches, {
-            headers: HEADERS
-        });
+        showLoading();
         
         const leagueId = leagueSelect.value;
         const dateRange = dateSelect.value;
@@ -69,12 +76,14 @@ async function fetchMatches() {
         
         apiUrl += `?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)}`;
         
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${PROXY_URL}${encodeURIComponent(apiUrl)}`, {
             headers: HEADERS
         });
-        const data = await response.json();
         
-        renderMatches(data.matches);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        renderMatches(data.matches || []);
     } catch (error) {
         console.error('Error fetching matches:', error);
         showError('تعذر تحميل المباريات. يرجى المحاولة لاحقاً');
@@ -102,27 +111,30 @@ function renderMatches(matches) {
             <td>
                 <img src="${getLeagueLogo(match.competition.code)}" 
                      alt="${match.competition.name}" 
-                     class="league-logo">
+                     class="league-logo"
+                     onerror="this.onerror=null;this.src='assets/images/default/league.png'">
                 ${match.competition.name}
             </td>
             <td>${formatMatchDate(match.utcDate)}</td>
             <td class="team-cell">
                 <img src="${getTeamLogo(match.homeTeam.id)}" 
                      alt="${match.homeTeam.name}" 
-                     class="team-logo">
+                     class="team-logo"
+                     onerror="this.onerror=null;this.src='assets/images/default/team.png'">
                 ${match.homeTeam.name}
             </td>
             <td class="score-cell">
-                ${match.score.fullTime.home ?? '-'} - ${match.score.fullTime.away ?? '-'}
+                ${match.score?.fullTime?.home ?? '-'} - ${match.score?.fullTime?.away ?? '-'}
             </td>
             <td class="team-cell">
                 <img src="${getTeamLogo(match.awayTeam.id)}" 
                      alt="${match.awayTeam.name}"
-                     class="team-logo">
+                     class="team-logo"
+                     onerror="this.onerror=null;this.src='assets/images/default/team.png'">
                 ${match.awayTeam.name}
             </td>
             <td class="status-cell ${getStatusClass(match.status)}">
-                ${getStatusText(match.status)}
+                ${getStatusText(match.status, match.minute)}
             </td>
         `;
         matchesTbody.appendChild(row);
@@ -160,11 +172,11 @@ function getStatusClass(status) {
     return statusMap[status] || '';
 }
 
-function getStatusText(status) {
+function getStatusText(status, minute) {
     const statusText = {
         'SCHEDULED': 'مجدولة',
-        'LIVE': 'مباشر',
-        'IN_PLAY': 'مباشر',
+        'LIVE': `مباشر ${minute ? 'الدقيقة ' + minute : ''}`,
+        'IN_PLAY': `مباشر ${minute ? 'الدقيقة ' + minute : ''}`,
         'PAUSED': 'مستأنفة قريباً',
         'FINISHED': 'انتهت',
         'POSTPONED': 'مؤجلة',
@@ -175,11 +187,11 @@ function getStatusText(status) {
 }
 
 function getLeagueLogo(competitionCode) {
-    return `assets/images/leagues/${competitionCode}.png`;
+    return `https://crests.football-data.org/${competitionCode}.png`;
 }
 
 function getTeamLogo(teamId) {
-    return `assets/images/teams/${teamId}.png`;
+    return `https://crests.football-data.org/${teamId}.png`;
 }
 
 function showLoading() {
@@ -198,7 +210,7 @@ function showError(message) {
             <td colspan="6">
                 <i class="fas fa-exclamation-circle"></i>
                 ${message}
-                <button onclick="fetchMatches()">إعادة المحاولة</button>
+                <button onclick="fetchMatches()" class="retry-btn">إعادة المحاولة</button>
             </td>
         </tr>
     `;
