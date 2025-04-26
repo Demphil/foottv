@@ -1,39 +1,25 @@
-// Fetch match data from API
+// استيراد مفتاح API من ملف config.js
+import API_KEY from './config.js'; // تأكد من استبدال المسار حسب هيكل موقعك
+
+// دالة لجلب المباريات من RapidAPI
 async function fetchMatches() {
   try {
-    const response = await fetch('https://api.football-data.org/v4/matches', {
+    const options = {
+      method: 'GET',
       headers: {
-        'X-Auth-Token': 'YOUR_API_KEY'
+        'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+        'X-RapidAPI-Key': API_KEY // استخدم مفتاح API الخاص بك هنا
       }
-    });
-const express = require('express');
-const axios = require('axios');
-const app = express();
+    };
 
-const API_KEY = process.env.API_KEY;
-
-app.get('/matches', async (req, res) => {
-  try {
-    const response = await axios.get('https://api.football-data.org/v4/matches', {
-      headers: { 'X-Auth-Token': API_KEY },
-    });
-    res.json(response.data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching matches');
-  }
-});
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+    const response = await fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures', options);
 
     if (!response.ok) {
       throw new Error(`Network error: ${response.status}`);
     }
 
     const data = await response.json();
-    return data.matches || [];
+    return data.response || []; // تأكد من تحديث هذا حسب هيكلية البيانات
   } catch (error) {
     console.error("Failed to fetch matches:", error);
     showError("حدث خطأ في جلب بيانات المباريات");
@@ -41,7 +27,7 @@ app.listen(3000, () => {
   }
 }
 
-// Load and render match data into the page
+// دالة لعرض المباريات في الواجهة
 async function loadMatchesData() {
   const container = document.getElementById('highlights-container');
   if (!container) return;
@@ -58,14 +44,14 @@ async function loadMatchesData() {
     container.innerHTML = validMatches.map(match => `
       <div class="match-card">
         <div class="teams">
-          <span class="home-team">${match.homeTeam.name}</span>
+          <span class="home-team">${match.teams.home.name}</span>
           <span class="vs">vs</span>
-          <span class="away-team">${match.awayTeam.name}</span>
+          <span class="away-team">${match.teams.away.name}</span>
         </div>
         <div class="match-info">
-          <span class="league">${match.competition.name}</span>
-          <span class="status ${getStatusClass(match.status)}">
-            ${getStatusText(match.status, match.minute)}
+          <span class="league">${match.league.name}</span>
+          <span class="status ${getStatusClass(match.fixture.status.short)}">
+            ${getStatusText(match.fixture.status.short, match.fixture.timestamp)}
           </span>
         </div>
         ${renderHighlights(match.highlights || [])}
@@ -80,7 +66,7 @@ async function loadMatchesData() {
   }
 }
 
-// Render highlights section for each match
+// دالة لعرض أبرز اللحظات (الفيديوهات) إذا كانت متاحة
 function renderHighlights(highlights) {
   if (!highlights.length) return '';
 
@@ -109,7 +95,7 @@ function renderHighlights(highlights) {
   `;
 }
 
-// Set up event listeners for highlight clicks
+// دالة لإعداد مستمعين للأحداث (الفيديوهات)
 function setupEventListeners() {
   document.querySelectorAll('.highlight-thumbnail').forEach(item => {
     item.addEventListener('click', function () {
@@ -118,57 +104,7 @@ function setupEventListeners() {
   });
 }
 
-// Set auto-refresh for match data
-function setAutoRefresh() {
-  setInterval(loadMatchesData, 60000);
-
-  window.addEventListener('focus', loadMatchesData);
-}
-
-// Get CSS class for match status
-function getStatusClass(status) {
-  const statusClasses = {
-    'SCHEDULED': 'not-started',
-    'LIVE': 'live',
-    'IN_PLAY': 'live',
-    'FINISHED': 'finished',
-    'POSTPONED': 'postponed',
-    'CANCELLED': 'cancelled'
-  };
-  return statusClasses[status] || '';
-}
-
-// Get text for match status
-function getStatusText(status, minute) {
-  const statusTexts = {
-    'SCHEDULED': 'لم تبدأ',
-    'LIVE': `مباشر ${minute || ''}`,
-    'IN_PLAY': `مباشر ${minute || ''}`,
-    'FINISHED': 'انتهت',
-    'POSTPONED': 'تأجلت',
-    'CANCELLED': 'ألغيت'
-  };
-  return statusTexts[status] || status;
-}
-
-// Update the last updated timestamp
-function updateLastUpdated(timestamp) {
-  const date = new Date(timestamp);
-  document.querySelectorAll('.last-updated').forEach(el => {
-    el.textContent = `آخر تحديث: ${date.toLocaleString('ar-EG')}`;
-  });
-}
-
-// Show error message
-function showError(message) {
-  const errorEl = document.createElement('div');
-  errorEl.className = 'error-message';
-  errorEl.textContent = message;
-  document.body.prepend(errorEl);
-  setTimeout(() => errorEl.remove(), 5000);
-}
-
-// Open video modal for highlights
+// دالة لفتح الفيديو في نافذة منبثقة
 function openVideoModal(videoUrl) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoFrame');
@@ -187,11 +123,29 @@ function openVideoModal(videoUrl) {
   });
 }
 
-// Validate match dates
+// دالة لتحديث وقت آخر تحديث للمباريات
+function updateLastUpdated(timestamp) {
+  const date = new Date(timestamp);
+  document.querySelectorAll('.last-updated').forEach(el => {
+    el.textContent = `آخر تحديث: ${date.toLocaleString('ar-EG')}`;
+  });
+}
+
+// دالة لعرض رسائل الأخطاء
+function showError(message) {
+  const errorEl = document.createElement('div');
+  errorEl.className = 'error-message';
+  errorEl.textContent = message;
+  document.body.prepend(errorEl);
+  setTimeout(() => errorEl.remove(), 5000);
+}
+
+// دالة للتحقق من التواريخ الصالحة للمباريات
 function validateDates(matches) {
+  const currentDate = new Date();
   return matches.filter(match => {
     try {
-      const matchDate = new Date(match.utcDate);
+      const matchDate = new Date(match.fixture.date);
       return matchDate instanceof Date && !isNaN(matchDate);
     } catch {
       return false;
@@ -199,8 +153,41 @@ function validateDates(matches) {
   });
 }
 
-// Initialize on DOM content load
+// دالة للحصول على الفئة المناسبة لحالة المباراة
+function getStatusClass(status) {
+  const statusClasses = {
+    'SCHEDULED': 'not-started',
+    'LIVE': 'live',
+    'IN_PLAY': 'live',
+    'FINISHED': 'finished',
+    'POSTPONED': 'postponed',
+    'CANCELLED': 'cancelled'
+  };
+  return statusClasses[status] || '';
+}
+
+// دالة للحصول على نص حالة المباراة
+function getStatusText(status, timestamp) {
+  const statusTexts = {
+    'SCHEDULED': 'لم تبدأ',
+    'LIVE': `مباشر ${timestamp || ''}`,
+    'IN_PLAY': `مباشر ${timestamp || ''}`,
+    'FINISHED': 'انتهت',
+    'POSTPONED': 'تأجلت',
+    'CANCELLED': 'ألغيت'
+  };
+  return statusTexts[status] || status;
+}
+
+// دالة للتحديث التلقائي للمباريات كل دقيقة
+function setAutoRefresh() {
+  setInterval(loadMatchesData, 60000); // التحديث كل دقيقة
+
+  window.addEventListener('focus', loadMatchesData); // التحديث عند إعادة تركيز الصفحة
+}
+
+// تنفيذ الكود بعد تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-  loadMatchesData();
-  setAutoRefresh();
+  loadMatchesData(); // جلب المباريات عند تحميل الصفحة
+  setAutoRefresh();  // بدء التحديث التلقائي
 });
