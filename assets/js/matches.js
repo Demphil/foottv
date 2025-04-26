@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // جلب قائمة البطولات
 async function loadLeagues() {
     try {
-        const response = await fetch(${API_BASE}/competitions, {
+        const response = await fetch(`${API_BASE}/competitions`, {
             headers: HEADERS
         });
         const data = await response.json();
