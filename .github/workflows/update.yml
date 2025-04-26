@@ -1,7 +1,7 @@
 name: Update Matches
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */6 * * *'  # كل 6 ساعات
   workflow_dispatch:
 
 permissions:
@@ -14,21 +14,29 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Generate new matches
-        run: |
-                node generate-matches.js
-                git add data/matches.json
-                git commit -m "Update matches data"
-                git push
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Fetch Data
+      - name: Install dependencies
+        run: npm install  # إذا كنت تحتاج أي dependencies
+
+      - name: Fetch Data from API
         env:
-          FOOTBALL_API_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          RAPIDAPI_HOST: ${{ secrets.RAPIDAPI_HOST }}  # أضف هذا إذا كان مطلوباً
         run: |
-          curl -H "X-Auth-Token: $RAPIDAPI_KEY" \
-               "https://api.football-data.org/v4/matches" \
-               > data/matches.json
+          curl -X GET "https://api-football-v1.p.rapidapi.com/v3/fixtures" \
+            -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
+            -H "X-RapidAPI-Host: api-football-v1.p.rapidapi.com" \
+            -o data/matches.json
+
+      - name: Generate new matches (fallback)
+        if: failure()  # يعمل فقط إذا فشل جلب البيانات من API
+        run: |
+          node scripts/generate-matches.js
 
       - name: Configure Git
         run: |
@@ -36,8 +44,8 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-      - name: Commit & Push
+      - name: Commit & Push changes
         run: |
           git add data/matches.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update matches data"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update matches data [skip ci]"
           git push
