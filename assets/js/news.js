@@ -1,6 +1,7 @@
 // News API Configuration
 const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك
-const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=كرة+قدم&language=ar&sortBy=publishedAt';
+const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=Apple&from=2025-04-26&sortBy=popularity&apiKey=API_KEY
+';
 
 // عناصر DOM
 const featuredNews = document.getElementById('featured-news');
