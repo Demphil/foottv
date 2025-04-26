@@ -254,6 +254,7 @@ ul {
   height: 100%;
   object-fit: cover;
 }
+
 .play-icon {
   position: absolute;
   top: 50%;
@@ -501,6 +502,27 @@ ul {
     grid-template-columns: 1fr;
   }
 }
+
+/* تأثيرات إضافية */
+.retry-btn:hover {
+    background: #357ae8;
+    transform: scale(1.05);
+}
+
+.match-teams:hover .team-logo {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.match-card:hover {
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-7px);
+}
+
+.main-nav a i {
+    font-size: 1.2rem;
+}
+
 .match-header {
   display: flex;
   justify-content: space-between;
@@ -521,6 +543,7 @@ ul {
   border-radius: var(--border-radius);
   color: var(--gray-color);
 }
+
 /* أنماط الحالات */
 .status-cell.scheduled { color: #666; }
 .status-cell.live { color: #d32f2f; font-weight: bold; }
@@ -532,32 +555,9 @@ ul {
     font-weight: bold;
     animation: pulse 1.5s infinite;
 }
+
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.6; }
     100% { opacity: 1; }
 }
-
-/* زر إعادة المحاولة */
-.retry-btn {
-    background: #4285f4;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-.news-card, .featured-card {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-.news-error {
-    color: #d32f2f;
-    text-align: center;
-    padding: 20px;
-}
-
