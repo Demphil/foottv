@@ -1,11 +1,7 @@
 // Configuration
-const API_KEY = '8d831470f41e4dbe983fba512cc0c795';
-const PROXY_URL = 'https://api.allorigins.win/raw?url='; // بديل أكثر موثوقية
+const API_KEY = '8d831470f41e4dbe983fba512cc0c795'; // استبدل بمفتاحك الفعلي
 const API_BASE = 'https://api.football-data.org/v4';
-const HEADERS = {
-    'X-Auth-Token': API_KEY,
-    'Content-Type': 'application/json'
-};
+const PROXY_URL = 'https://corsproxy.io/?'; // بديل موثوق لخدمة الـ Proxy
 
 // عناصر DOM
 const leagueSelect = document.getElementById('league-select');
@@ -13,6 +9,7 @@ const dateSelect = document.getElementById('date-select');
 const fetchBtn = document.getElementById('fetch-matches');
 const matchesTbody = document.getElementById('matches-tbody');
 const loadingSpinner = document.getElementById('loading-spinner');
+const errorContainer = document.getElementById('error-container');
 
 // تهيئة الصفحة
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,8 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadLeagues() {
     try {
         showLoading();
-        const response = await fetch(`${PROXY_URL}${encodeURIComponent(`${API_BASE}/competitions`)}`, {
-            headers: HEADERS
+        const apiUrl = `${API_BASE}/competitions`;
+        const response = await fetch(`${PROXY_URL}${encodeURIComponent(apiUrl)}`, {
+            headers: {
+                'X-Auth-Token': API_KEY,
+                'Accept': 'application/json'
+            }
         });
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -35,17 +36,18 @@ async function loadLeagues() {
         // مسح الخيارات القديمة
         leagueSelect.innerHTML = '<option value="all">جميع البطولات</option>';
         
-        data.competitions.forEach(league => {
-            if (league.plan === 'TIER_ONE') {
+        // تصفية البطولات المهمة فقط
+        data.competitions
+            .filter(league => league.plan === 'TIER_ONE')
+            .forEach(league => {
                 const option = document.createElement('option');
                 option.value = league.id;
                 option.textContent = league.name;
                 leagueSelect.appendChild(option);
-            }
-        });
+            });
     } catch (error) {
         console.error('Error loading leagues:', error);
-        showError('تعذر تحميل قائمة البطولات');
+        showError('تعذر تحميل قائمة البطولات. جرب تحديث الصفحة');
     } finally {
         hideLoading();
     }
@@ -55,29 +57,29 @@ async function loadLeagues() {
 async function fetchMatches() {
     try {
         showLoading();
+        clearErrors();
         
         const leagueId = leagueSelect.value;
         const dateRange = dateSelect.value;
         
+        // بناء رابط API حسب الفلتر
         let apiUrl = `${API_BASE}/matches`;
-        
         if (leagueId !== 'all') {
             apiUrl = `${API_BASE}/competitions/${leagueId}/matches`;
         }
         
+        // إضافة فلتر التاريخ
         const today = new Date();
         const dateTo = new Date();
-        
-        if (dateRange === '7') {
-            dateTo.setDate(today.getDate() + 7);
-        } else if (dateRange === '30') {
-            dateTo.setDate(today.getDate() + 30);
-        }
-        
+        dateTo.setDate(today.getDate() + (dateRange === '30' ? 30 : 7));
         apiUrl += `?dateFrom=${formatAPIDate(today)}&dateTo=${formatAPIDate(dateTo)}`;
         
+        // إرسال الطلب مع Proxy
         const response = await fetch(`${PROXY_URL}${encodeURIComponent(apiUrl)}`, {
-            headers: HEADERS
+            headers: {
+                'X-Auth-Token': API_KEY,
+                'Accept': 'application/json'
+            }
         });
         
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -96,10 +98,10 @@ async function fetchMatches() {
 function renderMatches(matches) {
     matchesTbody.innerHTML = '';
     
-    if (!matches || matches.length === 0) {
+    if (matches.length === 0) {
         matchesTbody.innerHTML = `
             <tr class="no-matches">
-                <td colspan="6">لا توجد مباريات متاحة</td>
+                <td colspan="6">لا توجد مباريات متاحة حاليًا</td>
             </tr>
         `;
         return;
@@ -123,7 +125,7 @@ function renderMatches(matches) {
                      onerror="this.onerror=null;this.src='assets/images/default/team.png'">
                 ${match.homeTeam.name}
             </td>
-            <td class="score-cell">
+            <td class="score-cell ${getScoreClass(match.status)}">
                 ${match.score?.fullTime?.home ?? '-'} - ${match.score?.fullTime?.away ?? '-'}
             </td>
             <td class="team-cell">
@@ -141,7 +143,8 @@ function renderMatches(matches) {
     });
 }
 
-// وظائف مساعدة
+// ============= وظائف مساعدة =============
+
 function formatAPIDate(date) {
     return date.toISOString().split('T')[0];
 }
@@ -172,11 +175,15 @@ function getStatusClass(status) {
     return statusMap[status] || '';
 }
 
+function getScoreClass(status) {
+    return status === 'LIVE' || status === 'IN_PLAY' ? 'live-score' : '';
+}
+
 function getStatusText(status, minute) {
     const statusText = {
         'SCHEDULED': 'مجدولة',
-        'LIVE': `مباشر ${minute ? 'الدقيقة ' + minute : ''}`,
-        'IN_PLAY': `مباشر ${minute ? 'الدقيقة ' + minute : ''}`,
+        'LIVE': `مباشر ${minute ? '⚽ ' + minute + "'" : ''}`,
+        'IN_PLAY': `مباشر ${minute ? '⚽ ' + minute + "'" : ''}`,
         'PAUSED': 'مستأنفة قريباً',
         'FINISHED': 'انتهت',
         'POSTPONED': 'مؤجلة',
@@ -186,20 +193,16 @@ function getStatusText(status, minute) {
     return statusText[status] || status;
 }
 
-function getLeagueLogo(code) {
-    return `https://crests.football-data.org/${code}.png`;
+function getLeagueLogo(competitionCode) {
+    return `https://crests.football-data.org/${competitionCode}.png`;
 }
 
-// في ملف matches.js
-function getLeagueLogo(code) {
-    // إذا كنت تستخدم صور محلية:
-    return `assets/images/leagues/${code}.png`;
-    // أو للاستخدام الخارجي:
-    // return `https://crests.football-data.org/${code}.png`;
+function getTeamLogo(teamId) {
+    return `https://crests.football-data.org/${teamId}.png`;
 }
 
 function showLoading() {
-    loadingSpinner.style.display = 'flex';
+    loadingSpinner.style.display = 'block';
     matchesTbody.style.opacity = '0.5';
 }
 
@@ -209,18 +212,34 @@ function hideLoading() {
 }
 
 function showError(message) {
-    matchesTbody.innerHTML = `
-        <tr class="error-row">
-            <td colspan="6">
-                <i class="fas fa-exclamation-circle"></i>
-                ${message}
-                <button onclick="fetchMatches()" class="retry-btn">إعادة المحاولة</button>
-            </td>
-        </tr>
+    errorContainer.innerHTML = `
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            ${message}
+            <button onclick="retryFetch()" class="retry-btn">
+                <i class="fas fa-sync-alt"></i> إعادة المحاولة
+            </button>
+        </div>
     `;
+    errorContainer.style.display = 'block';
 }
 
-// إضافة مستمعي الأحداث
+function clearErrors() {
+    errorContainer.style.display = 'none';
+}
+
+function retryFetch() {
+    clearErrors();
+    fetchMatches();
+}
+
+// ============= مستمعي الأحداث =============
 fetchBtn.addEventListener('click', fetchMatches);
 leagueSelect.addEventListener('change', fetchMatches);
 dateSelect.addEventListener('change', fetchMatches);
+
+// تحديث تلقائي كل دقيقة للمباريات الحية
+setInterval(() => {
+    const hasLiveMatches = document.querySelector('.status-cell.live');
+    if (hasLiveMatches) fetchMatches();
+}, 60000);
