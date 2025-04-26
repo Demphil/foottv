@@ -81,14 +81,15 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('last-updated').textContent = 
-                        آخر تحديث: ${new Date(data.last_updated).toLocaleString('ar-EG')};
+    `آخر تحديث: ${new Date(data.last_updated).toLocaleString('ar-EG')}`;
+
                     
                     const container = document.getElementById('matches-container');
                     container.innerHTML = '';
                     
                     data.matches.forEach(match => {
                         const matchCard = document.createElement('div');
-                        matchCard.className = match-card ${match.status === 'LIVE' ? 'live' : ''};
+                        matchCard.className = `match-card ${match.status === 'LIVE' ? 'live' : ''}`;
                         matchCard.innerHTML = 
                             <div class="teams">
                                 <div class="team">
@@ -151,7 +152,8 @@
             <div class="footer-content">
                 <div class="footer-section about">
                     <div class="logo">
-                        <img src="images/logo-white.png" alt="بلوغر">
+                        <img src="assets/images/logo.png" alt="بلوغر - البث المباشر للمباريات">
+
                         <span>بلوغر</span>
                     </div>
                     <p>موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية. نقدم تغطية شاملة لأهم البطولات والمباريات.</p>
