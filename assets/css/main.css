@@ -521,3 +521,30 @@ ul {
   border-radius: var(--border-radius);
   color: var(--gray-color);
 }
+/* أنماط الحالات */
+.status-cell.scheduled { color: #666; }
+.status-cell.live { color: #d32f2f; font-weight: bold; }
+.status-cell.finished { color: #388e3c; }
+.status-cell.postponed { color: #ffa000; }
+
+/* نتائج المباريات الحية */
+.live-score { 
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+/* زر إعادة المحاولة */
+.retry-btn {
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
