@@ -1,6 +1,6 @@
 // Configuration
-const API_KEY = ''; // استبدل بمفتاحك الفعلي من RapidAPI
-const API_BASE = 'https://api.football-data.org/v4'; // يمكن تحديث هذا إذا كنت تستخدم RapidAPI بشكل مباشر
+const API_KEY = '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438'; // استبدل بمفتاحك الفعلي من RapidAPI
+const API_BASE = 'https://rapidapi.com'; // يمكن تحديث هذا إذا كنت تستخدم RapidAPI بشكل مباشر
 const PROXY_URL = 'https://corsproxy.io/?'; // بديل موثوق لخدمة الـ Proxy
 
 // عناصر DOM
