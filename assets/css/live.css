@@ -326,8 +326,9 @@
         width: 100%;
         justify-content: center;
         margin-bottom: 10px;
-    
- }
+    }
+}
+
 @media (max-width: 480px) {
     .match-teams {
         padding: 15px;
@@ -337,4 +338,4 @@
         width: 30px;
         height: 30px;
     }
-
+}
