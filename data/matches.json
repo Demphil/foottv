@@ -1,1 +1,12 @@
-{"filters":{"dateFrom":"2025-04-26","dateTo":"2025-04-27","permission":null},"resultSet":{"count":0},"matches":[]}
+{
+  "_comment": "هذا الملف يحتوي على بيانات محدثة للمباريات بناءً على نطاق التاريخ المحدد. حاليًا، لا توجد مباريات ضمن النطاق.",
+  "filters": {
+    "dateFrom": "2025-04-26",
+    "dateTo": "2025-04-27",
+    "permission": null
+  },
+  "resultSet": {
+    "count": 0
+  },
+  "matches": []
+}
