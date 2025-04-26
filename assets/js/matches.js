@@ -88,7 +88,7 @@ function renderMatches(matches) {
     
     if (!matches || matches.length === 0) {
         matchesTbody.innerHTML = 
-            <tr class="no-matches">
+            `<tr class="no-matches">`
                 <td colspan="6">لا توجد مباريات متاحة</td>
             </tr>
         ;
