@@ -1,111 +1,142 @@
-// تأكد من تحميل DOM بالكامل أولاً
 document.addEventListener('DOMContentLoaded', function() {
-    // العناصر التي سيتم استخدامها
+    // تعريف العناصر مع التحقق من وجودها
     const elements = {
-        liveContainer: document.getElementById('live-matches-container'),
+        tableBody: document.getElementById('matches-tbody'),
+        loadingSpinner: document.getElementById('loading-spinner'),
+        noDataMessage: document.getElementById('no-data-message'),
         refreshBtn: document.getElementById('refresh-btn'),
-        lastUpdatedEl: document.getElementById('last-updated'),
-        matchDetailsSection: document.getElementById('match-details'),
-        nowPlayingEl: document.getElementById('now-playing')
+        leagueSelect: document.getElementById('league-select'),
+        dateSelect: document.getElementById('date-select')
     };
 
-    // التحقق من وجود جميع العناصر
-    if (!validateElements(elements)) return;
+    // التحقق من وجود العناصر الأساسية
+    if (!elements.tableBody || !elements.loadingSpinner || !elements.noDataMessage) {
+        console.error('عناصر DOM الأساسية غير موجودة!');
+        return;
+    }
 
     // تهيئة التطبيق
-    loadMatches(elements);
-    setupEventListeners(elements);
+    initEventListeners(elements);
+    loadMatchesData(elements);
 });
 
-// التحقق من وجود العناصر
-function validateElements(elements) {
-    for (const [key, element] of Object.entries(elements)) {
-        if (!element) {
-            console.error(`Error: Element ${key} not found!`);
-            return false;
-        }
-    }
-    return true;
-}
-
-// تحميل المباريات مع التحقق من العناصر
-async function loadMatches({ liveContainer, refreshBtn }) {
+async function loadMatchesData({ tableBody, loadingSpinner, noDataMessage }) {
     try {
-        // التحقق من العناصر مرة أخرى
-        if (!liveContainer || !refreshBtn) {
-            throw new Error('Required elements are missing');
-        }
-
-        // إظهار حالة التحميل
-        refreshBtn.classList.add('rotating');
-        liveContainer.innerHTML = '<div class="loading">جاري تحميل المباريات...</div>';
+        showLoading(true, loadingSpinner, noDataMessage);
         
         const response = await fetch('data/matches.json');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
-        displayMatches(data.response || [], liveContainer);
+        renderMatches(data.response || [], tableBody, noDataMessage);
         
     } catch (error) {
-        console.error('Error loading matches:', error);
-        if (liveContainer) {
-            liveContainer.innerHTML = '<div class="error">حدث خطأ أثناء تحميل المباريات</div>';
-        }
+        console.error('فشل تحميل البيانات:', error);
+        showError(noDataMessage, 'حدث خطأ أثناء جلب بيانات المباريات');
     } finally {
-        if (refreshBtn) refreshBtn.classList.remove('rotating');
+        showLoading(false, loadingSpinner);
     }
 }
 
-// عرض المباريات مع التحقق من العناصر
-function displayMatches(matches, container) {
-    if (!container) return;
-    
+function renderMatches(matches, container, noDataMessage) {
     container.innerHTML = '';
     
     if (!matches || matches.length === 0) {
-        container.innerHTML = '<div class="no-matches">لا توجد مباريات حالياً.</div>';
+        noDataMessage.style.display = 'table-row';
         return;
     }
     
+    noDataMessage.style.display = 'none';
+    
     matches.forEach(match => {
-        const matchCard = document.createElement('div');
-        matchCard.classList.add('match-card');
-        matchCard.innerHTML = `
-            <div class="match-header">
-                <div class="match-league">${match.league?.name || 'غير معروف'}</div>
-                <div class="match-time">${new Date(match.fixture.date).toLocaleString()}</div>
-            </div>
-            <div class="match-teams">
-                <div class="team">
-                    <div class="team-info">
-                        <img src="${match.teams.home.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.home.name}">
-                        <span class="team-name">${match.teams.home.name}</span>
-                    </div>
-                    <div class="match-score">${match.score.fullTime.home ?? '–'} - ${match.score.fullTime.away ?? '–'}</div>
-                    <div class="team-info">
-                        <img src="${match.teams.away.logo || 'default-team.png'}" class="team-logo" alt="${match.teams.away.name}">
-                        <span class="team-name">${match.teams.away.name}</span>
-                    </div>
-                </div>
-            </div>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${match.league?.name || 'غير معروف'}</td>
+            <td>${formatMatchDate(match.fixture.date)}</td>
+            <td class="team-cell">
+                <img src="${match.teams.home.logo || 'default-team.png'}" 
+                     alt="${match.teams.home.name}" 
+                     class="team-logo">
+                <span>${match.teams.home.name}</span>
+            </td>
+            <td class="score">${match.goals.home ?? '0'} - ${match.goals.away ?? '0'}</td>
+            <td class="team-cell">
+                <img src="${match.teams.away.logo || 'default-team.png'}" 
+                     alt="${match.teams.away.name}" 
+                     class="team-logo">
+                <span>${match.teams.away.name}</span>
+            </td>
+            <td class="status ${getStatusClass(match.fixture.status.short)}">
+                ${match.fixture.status.long}
+            </td>
         `;
-        container.appendChild(matchCard);
+        container.appendChild(row);
     });
 }
 
-// إعداد الأحداث
-function setupEventListeners({ refreshBtn }) {
-    if (!refreshBtn) return;
+// ============= دوال مساعدة ============= //
+function initEventListeners({ refreshBtn, leagueSelect, dateSelect }) {
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            const elements = {
+                tableBody: document.getElementById('matches-tbody'),
+                loadingSpinner: document.getElementById('loading-spinner'),
+                noDataMessage: document.getElementById('no-data-message')
+            };
+            loadMatchesData(elements);
+        });
+    }
     
-    refreshBtn.addEventListener('click', () => {
-        const elements = {
-            liveContainer: document.getElementById('live-matches-container'),
-            refreshBtn: document.getElementById('refresh-btn')
-        };
-        if (validateElements(elements)) {
-            loadMatches(elements);
-        }
-    });
+    if (leagueSelect) {
+        leagueSelect.addEventListener('change', filterByLeague);
+    }
+    
+    if (dateSelect) {
+        dateSelect.addEventListener('change', filterByDate);
+    }
 }
-// في نهاية live.js
-document.getElementById('current-year').textContent = new Date().getFullYear();
+
+function showLoading(show, spinner, noDataMsg) {
+    if (spinner) spinner.style.display = show ? 'flex' : 'none';
+    if (noDataMsg && show) noDataMsg.style.display = 'none';
+}
+
+function showError(element, message) {
+    if (element) {
+        element.innerHTML = `<td colspan="6">${message}</td>`;
+        element.style.display = 'table-row';
+    }
+}
+
+function formatMatchDate(dateString) {
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleString('ar-EG', options);
+}
+
+function getStatusClass(status) {
+    const statusClasses = {
+        'NS': 'not-started',
+        'LIVE': 'in-progress',
+        'HT': 'in-progress',
+        'FT': 'finished',
+        'PST': 'postponed'
+    };
+    return statusClasses[status] || '';
+}
+
+// فلترة المباريات
+function filterByLeague() {
+    const leagueId = this.value;
+    // تطبيق الفلترة حسب البطولة
+}
+
+function filterByDate() {
+    const dateRange = this.value;
+    // تطبيق الفلترة حسب التاريخ
+}
