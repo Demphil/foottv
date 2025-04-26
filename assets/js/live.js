@@ -158,3 +158,10 @@ function showMatchDetails(match) {
     console.log('Match details:', match);
     alert(`تفاصيل المباراة: ${match.teams.home.name} vs ${match.teams.away.name}`);
 }
+function filterMatchesByDate(matches) {
+  const today = new Date('2025-04-26'); // تاريخ اليوم
+  return matches.filter(match => {
+    const matchDate = new Date(match.fixture.date);
+    return matchDate >= today;
+  });
+}
