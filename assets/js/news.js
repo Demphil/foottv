@@ -17,7 +17,7 @@ async function fetchMatchesData() {
         const data = await response.json();
         
         // 2. معالجة وعرض البيانات
-        displayMatches(data.response); // تعديل 'response' حسب هيكل بياناتك من API
+         displayMatches(data.response); // قد يكون data.fixtures أو data.matches
     } catch (error) {
         console.error('Error fetching matches data:', error);
         document.getElementById('matches-container').innerHTML = 
