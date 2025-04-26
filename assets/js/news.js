@@ -1,6 +1,6 @@
 // News API Configuration
 const NEWS_API_KEY = '1930d8747282440aaee1688330c10db2'; // استبدلها بمفتاحك
-const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=Apple&from=2025-04-26&sortBy=popularity&apiKey=API_KEY
+const NEWS_API_URL = 'https://newsapi.org/v2/everything?q=%D9%83%D8%B1%D8%A9+%D9%82%D8%AF%D9%85&language=ar&sortBy=publishedAt&page=1&pageSize=6&apiKey=1930d8747282440aaee1688330c10db2
 ';
 
 // عناصر DOM
