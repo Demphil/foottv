@@ -6,7 +6,7 @@ async function fetchMatches() {
     try {
         showLoading();
         
-        const response = await fetch(`https://${RAPIDAPI_HOST}/v3/fixtures?league=39&season=2023`, {
+        const response = await fetch(`https://${RAPIDAPI_HOST}/v3/fixtures?league=39&season=2025`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Key': RAPIDAPI_KEY,
