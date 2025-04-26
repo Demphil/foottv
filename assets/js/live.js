@@ -107,3 +107,5 @@ function setupEventListeners({ refreshBtn }) {
         }
     });
 }
+// في نهاية live.js
+document.getElementById('current-year').textContent = new Date().getFullYear();
