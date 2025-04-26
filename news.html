@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="آخر أخبار كرة القدم مباشرة من المصادر الموثوقة.">
     <title>أخبار كرة القدم - بلوغر</title>
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- الهيدر (مشابه لـ index.html) -->
+    <!-- الهيدر -->
+    <header class="header">
+        <div class="container">
+            <h1 class="site-title">أخبار كرة القدم</h1>
+        </div>
+    </header>
 
     <main class="main-content">
         <div class="container">
@@ -24,19 +30,23 @@
                     <!-- سيتم ملؤها بواسطة API -->
                 </div>
                 
-                <div id="featured-news"></div>
-<div id="news-grid"></div>
-<div id="news-loading" style="display:none;">جاري تحميل الأخبار...</div>
-<button id="load-more" style="display:none;">تحميل المزيد</button>
+                <!-- مؤشر التحميل -->
+                <div id="news-loading" style="display:none;">جاري تحميل الأخبار...</div>
                 
-                <button id="load-more" class="load-more-btn">
+                <!-- زر تحميل المزيد -->
+                <button id="load-more" class="load-more-btn" style="display:none;">
                     <i class="fas fa-plus"></i> تحميل المزيد
                 </button>
             </section>
         </div>
     </main>
 
-    <!-- الفوتر (مشابه لـ index.html) -->
+    <!-- الفوتر -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 أخبار كرة القدم. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
 
     <script src="assets/js/news.js" defer></script>
 </body>
