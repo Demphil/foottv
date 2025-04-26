@@ -141,12 +141,20 @@
         // دالة جلب وعرض المباريات من RapidAPI
         function loadMatches() {
             fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures', {
-                method: 'GET',
-                headers: {
-                    'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
-                    'X-RapidAPI-Key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438' // استبدل بـ مفتاح API الخاص بك
-                }
-            })
+  method: 'GET',
+  headers: {
+    'X-RapidAPI-Key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438',  // استبدلها بمفتاحك الحقيقي
+    'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+  }
+})
+.then(response => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+})
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
             .then(response => response.json())
             .then(data => {
                 const todayMatches = data.response.filter(match => new Date(match.fixture.date).toLocaleDateString() === new Date().toLocaleDateString());
