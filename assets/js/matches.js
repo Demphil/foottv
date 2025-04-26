@@ -196,7 +196,7 @@ function hideLoading() {
 
 function showError(message) {
     matchesTbody.innerHTML = `
-        <tr class="error-row" style="background-color: #ffe6e6; text-align: center;">
+            <tr class="error-row" style="background-color: #ffe6e6; text-align: center; padding: 10px;">
             <td colspan="6" style="padding: 20px; color: #d9534f; font-size: 16px;">
                 <i class="fas fa-exclamation-circle" style="margin-right: 10px; font-size: 18px;"></i>
                 ${message}
