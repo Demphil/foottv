@@ -1,42 +1,56 @@
-// RapidAPI Configuration
-const RAPIDAPI_KEY = '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438';
-const RAPIDAPI_HOST = 'football-news-aggregator.p.rapidapi.com';
+// news.js
 
-// عناصر DOM
-const elements = {
-    featuredNews: document.getElementById('featured-news'),
-    newsGrid: document.getElementById('news-grid'),
-    newsLoading: document.getElementById('news-loading'),
-    loadMoreBtn: document.getElementById('load-more'),
-    errorContainer: document.getElementById('error-container')
-};
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. جلب بيانات المباريات من ملف JSON
+    fetchMatchesData();
 
-// متغيرات التطبيق
-let currentPage = 1;
-const pageSize = 6;
+    // (اختياري) تحديث البيانات كل 5 دقائق إذا كان الموقع مفتوحاً
+    setInterval(fetchMatchesData, 300000);
+});
 
-async function fetchNews() {
+async function fetchMatchesData() {
     try {
-        showLoading();
-        
-        const response = await fetch(`https://${RAPIDAPI_HOST}/news?page=${currentPage}&pageSize=${pageSize}`, {
-            method: 'GET',
-            headers: {
-                'X-RapidAPI-Key': RAPIDAPI_KEY,
-                'X-RapidAPI-Host': RAPIDAPI_HOST
-            }
-        });
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+        const response = await fetch('./data/matches.json');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
         const data = await response.json();
-        renderNews(data);
         
+        // 2. معالجة وعرض البيانات
+        displayMatches(data.response); // تعديل 'response' حسب هيكل بياناتك من API
     } catch (error) {
-        handleError(error);
-    } finally {
-        hideLoading();
+        console.error('Error fetching matches data:', error);
+        document.getElementById('matches-container').innerHTML = 
+            '<p class="error">فشل تحميل بيانات المباريات. يرجى المحاولة لاحقاً.</p>';
     }
 }
 
-// باقي الدوال تبقى كما هي مع تعديلات طفيفة
+function displayMatches(matches) {
+    const container = document.getElementById('matches-container');
+    container.innerHTML = ''; // مسح المحتوى القديم
+
+    if (!matches || matches.length === 0) {
+        container.innerHTML = '<p>لا توجد مباريات حالياً.</p>';
+        return;
+    }
+
+    // 3. عرض كل مباراة في بطاقة (Card)
+    matches.forEach(match => {
+        const matchCard = document.createElement('div');
+        matchCard.className = 'match-card';
+
+        matchCard.innerHTML = `
+            <div class="teams">
+                <span class="team home">${match.teams.home.name}</span>
+                <span class="vs">vs</span>
+                <span class="team away">${match.teams.away.name}</span>
+            </div>
+            <div class="details">
+                <span class="date">${new Date(match.fixture.date).toLocaleString()}</span>
+                <span class="league">${match.league?.name || 'غير محدد'}</span>
+            </div>
+        `;
+
+        container.appendChild(matchCard);
+    });
+}
