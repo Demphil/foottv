@@ -140,11 +140,11 @@
     <script>
         // دالة جلب وعرض المباريات من RapidAPI
         function loadMatches() {
-            fetch('https://api-football-v1.p.rapidapi.com/v3/fixtures', {
+           fetch('https://api-football-v1.p.rapidapi.com/v3/timezone', {
   method: 'GET',
   headers: {
-    'X-RapidAPI-Key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438',  // استبدلها بمفتاحك الحقيقي
-    'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+    'x-rapidapi-key': 'your-api-key-here'
   }
 })
 .then(response => {
@@ -153,7 +153,36 @@
   }
   return response.json();
 })
-.then(data => console.log(data))
+.then(data => {
+  console.log(data); // Log the raw data
+  
+  // Make sure data.response exists and is an array
+  if (!data.response || !Array.isArray(data.response)) {
+    throw new Error('Invalid data structure from API');
+  }
+
+  const today = new Date().toLocaleDateString();
+  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString();
+
+  const todayMatches = data.response.filter(match => 
+    match.fixture && 
+    match.fixture.date && 
+    new Date(match.fixture.date).toLocaleDateString() === today
+  );
+
+  const tomorrowMatches = data.response.filter(match => 
+    match.fixture && 
+    match.fixture.date && 
+    new Date(match.fixture.date).toLocaleDateString() === tomorrow
+  );
+
+  // Now you can use todayMatches and tomorrowMatches
+  console.log("Today's matches:", todayMatches);
+  console.log("Tomorrow's matches:", tomorrowMatches);
+  
+  // Return the filtered data if needed for further processing
+  return { todayMatches, tomorrowMatches };
+})
 .catch(error => console.error('Error:', error));
             .then(response => response.json())
             .then(data => {
