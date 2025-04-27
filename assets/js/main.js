@@ -1,5 +1,5 @@
 // استيراد مفتاح API من ملف config.js
-import API_KEY from './api/RAPIDAPI_KEY'; // تأكد من استبدال المسار حسب هيكل موقعك
+import API_KEY from 'config.js'; // تأكد من استبدال المسار حسب هيكل موقعك
 
 // دالة لجلب المباريات من RapidAPI
 async function fetchMatches() {
