@@ -135,6 +135,28 @@
   
   window.addEventListener('load', displayMatches);
 </script>
+    <div id="debug-console" style="display: none;">
+  <h3>معلومات التصحيح:</h3>
+  <pre id="debug-output"></pre>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const debugOutput = document.getElementById('debug-output');
+  
+  // تسجيل معلومات التهيئة
+  debugOutput.textContent += 'جاري تهيئة الصفحة...\n';
+  
+  // تسجيل حالة الاتصال
+  fetch('https://api.example.com/ping')
+    .then(response => {
+      debugOutput.textContent += 'الاتصال بالسيرفر ناجح\n';
+    })
+    .catch(error => {
+      debugOutput.textContent += `خطأ في الاتصال: ${error}\n`;
+    });
+});
+</script>
     <script type="module" src="assets/js/matches.js"></script>
 
 </body>
