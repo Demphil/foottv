@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 $data = json_decode(file_get_contents('php://input'), true);
 
 // التحقق من الصلاحيات
-if ($_SERVER['REQUEST_METHOD'] !== 'POST'  !isset($data['api_key'])  $data['api_key'] !== 'YOUR_SECRET_KEY') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST'  !isset($data['api_key'])  $data['api_key'] !== '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438') {
     http_response_code(403);
     die(json_encode(['error' => 'Unauthorized']));
 }
