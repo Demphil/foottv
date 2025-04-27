@@ -121,20 +121,7 @@
         }
     </script>
     <!-- في نهاية ملف matches.html -->
-<script type="module">
-  import { getMatches, setTestMode } from './assets/js/api/football.js';
-  
-  // للاختبار فقط
-  setTestMode(true);
-  
-  async function displayMatches() {
-    const matches = await getMatches();
-    console.log(matches);
-    // عرض البيانات في الصفحة
-  }
-  
-  window.addEventListener('load', displayMatches);
-</script>
+
     <div id="debug-console" style="display: none;">
   <h3>معلومات التصحيح:</h3>
   <pre id="debug-output"></pre>
