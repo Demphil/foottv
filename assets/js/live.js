@@ -6,7 +6,7 @@ function loadMatches() {
         method: 'GET',
         headers: {
             'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
-            'x-rapidapi-key': 'your-api-key-here'
+            'x-rapidapi-key': '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438'
         }
     })
     .then(response => {
