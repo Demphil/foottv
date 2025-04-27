@@ -120,5 +120,20 @@
                 '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">');
         }
     </script>
+    <!-- في نهاية ملف matches.html -->
+<script type="module">
+  import { getMatches, setTestMode } from './assets/js/football.js';
+  
+  // للاختبار فقط
+  setTestMode(true);
+  
+  async function displayMatches() {
+    const matches = await getMatches();
+    console.log(matches);
+    // عرض البيانات في الصفحة
+  }
+  
+  window.addEventListener('load', displayMatches);
+</script>
 </body>
 </html>
