@@ -1,27 +1,214 @@
-// RapidAPI Configuration
-const RAPIDAPI_KEY = '795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438';
-const RAPIDAPI_HOST = 'api-football-v1.p.rapidapi.com';
+/**
+ * matches.js - إدارة جدول المباريات
+ * متوافق مع matches.html المعدل
+ * آخر تحديث: مايو 2025
+ */
 
-async function fetchMatches() {
-    try {
-        showLoading();
+// تهيئة التطبيق عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+});
+
+// الكائن الرئيسي للتطبيق
+const MatchApp = {
+    elements: {
+        tableBody: null,
+        loadingSpinner: null,
+        noDataMessage: null,
+        refreshBtn: null,
+        leagueSelect: null,
+        dateSelect: null,
+        lastUpdated: null,
+        nowPlaying: null,
+        matchDetails: null,
+        closeDetailsBtn: null
+    },
+
+    // تهيئة العناصر والأحداث
+    init() {
+        this.cacheElements();
+        this.setupEventListeners();
+        this.loadData();
+        this.updateYear();
+    },
+
+    // تخزين العناصر في الكائن
+    cacheElements() {
+        this.elements = {
+            tableBody: document.getElementById('matches-tbody'),
+            loadingSpinner: document.getElementById('loading-spinner'),
+            noDataMessage: document.getElementById('no-data-message'),
+            refreshBtn: document.getElementById('refresh-btn'),
+            leagueSelect: document.getElementById('league-select'),
+            dateSelect: document.getElementById('date-select'),
+            lastUpdated: document.getElementById('last-updated'),
+            nowPlaying: document.getElementById('now-playing'),
+            matchDetails: document.getElementById('match-details'),
+            closeDetailsBtn: document.getElementById('close-details')
+        };
+    },
+
+    // إعداد معالجات الأحداث
+    setupEventListeners() {
+        const { refreshBtn, closeDetailsBtn } = this.elements;
         
-        const response = await fetch(`https://${RAPIDAPI_HOST}/v3/fixtures?league=39&season=2025`, {
-            method: 'GET',
-            headers: {
-                'X-RapidAPI-Key': RAPIDAPI_KEY,
-                'X-RapidAPI-Host': RAPIDAPI_HOST
-            }
-        });
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.loadData());
+        }
+
+        if (closeDetailsBtn) {
+            closeDetailsBtn.addEventListener('click', () => this.closeDetails());
+        }
+    },
+
+    // جلب البيانات من API
+    async loadData() {
+        this.showLoading(true);
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const data = await this.fetchMatches();
+            this.renderMatches(data);
+            this.updateTimestamp();
+        } catch (error) {
+            console.error('فشل تحميل البيانات:', error);
+            this.showError('حدث خطأ في جلب البيانات');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    // جلب بيانات المباريات
+    async fetchMatches() {
+        const response = await fetch('data/matches.json');
+        if (!response.ok) {
+            throw new Error(`خطأ في الشبكة: ${response.status}`);
+        }
+        return await response.json();
+    },
+
+    // عرض المباريات في الجدول
+    renderMatches(data) {
+        const { tableBody, noDataMessage } = this.elements;
         
-        const data = await response.json();
-        renderMatches(data.response);
-        
-    } catch (error) {
-        handleError(error);
-    } finally {
-        hideLoading();
+        if (!data || data.length === 0) {
+            noDataMessage.style.display = 'flex';
+            tableBody.innerHTML = '';
+            return;
+        }
+
+        noDataMessage.style.display = 'none';
+        tableBody.innerHTML = data.map(match => this.createMatchRow(match)).join('');
+    },
+
+    // إنشاء صف للمباراة
+    createMatchRow(match) {
+        const homeLogo = match.teams.home.logo || 'assets/images/default-team.png';
+        const awayLogo = match.teams.away.logo || 'assets/images/default-team.png';
+        const statusClass = this.getStatusClass(match.fixture.status.short);
+
+        return `
+            <tr data-match-id="${match.fixture.id}" onclick="MatchApp.showDetails(${match.fixture.id})">
+                <td>${match.league?.name || 'غير معروف'}</td>
+                <td>${this.formatDate(match.fixture.date)}</td>
+                <td class="team-cell">
+                    <img src="${homeLogo}" 
+                         alt="${match.teams.home.name}" 
+                         class="team-logo"
+                         loading="lazy"
+                         onerror="this.src='assets/images/default-team.png'">
+                    <span>${match.teams.home.name}</span>
+                </td>
+                <td class="score">${match.goals.home ?? '-'} - ${match.goals.away ?? '-'}</td>
+                <td class="team-cell">
+                    <img src="${awayLogo}" 
+                         alt="${match.teams.away.name}" 
+                         class="team-logo"
+                         loading="lazy"
+                         onerror="this.src='assets/images/default-team.png'">
+                    <span>${match.teams.away.name}</span>
+                </td>
+                <td class="status ${statusClass}">
+                    ${match.fixture.status.long}
+                </td>
+            </tr>
+        `;
+    },
+
+    // عرض تفاصيل المباراة
+    showDetails(matchId) {
+        const { matchDetails } = this.elements;
+        // يمكنك تطوير هذه الوظيفة حسب الحاجة
+        matchDetails.style.display = 'block';
+        console.log('عرض تفاصيل المباراة:', matchId);
+    },
+
+    // إغلاق نافذة التفاصيل
+    closeDetails() {
+        this.elements.matchDetails.style.display = 'none';
+    },
+
+    // التحكم في حالة التحميل
+    showLoading(show) {
+        const { loadingSpinner, noDataMessage } = this.elements;
+        loadingSpinner.style.display = show ? 'flex' : 'none';
+        if (show) noDataMessage.style.display = 'none';
+    },
+
+    // عرض رسالة خطأ
+    showError(message) {
+        const { noDataMessage } = this.elements;
+        noDataMessage.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            <p>${message}</p>
+        `;
+        noDataMessage.style.display = 'flex';
+    },
+
+    // تحديث التاريخ والوقت
+    updateTimestamp() {
+        const { lastUpdated } = this.elements;
+        if (lastUpdated) {
+            lastUpdated.textContent = `آخر تحديث: ${new Date().toLocaleString('ar-EG')}`;
+        }
+    },
+
+    // تحديث السنة في الفوتر
+    updateYear() {
+        const yearElement = document.getElementById('current-year');
+        if (yearElement) {
+            yearElement.textContent = new Date().getFullYear();
+        }
+    },
+
+    // تصنيف حالة المباراة
+    getStatusClass(status) {
+        const statusMap = {
+            'NS': 'not-started',
+            'LIVE': 'in-progress',
+            'HT': 'in-progress',
+            'FT': 'finished',
+            'PST': 'postponed'
+        };
+        return statusMap[status] || '';
+    },
+
+    // تنسيق التاريخ
+    formatDate(dateString) {
+        const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return new Date(dateString).toLocaleString('ar-EG', options);
     }
+};
+
+// تهيئة التطبيق
+function initializeApp() {
+    MatchApp.init();
 }
+
+// جعل الكائن متاحًا عالميًا للاستدعاء من HTML
+window.MatchApp = MatchApp;
