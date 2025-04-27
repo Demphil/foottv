@@ -30,13 +30,14 @@ jobs:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
           RAPIDAPI_HOST: ${{ secrets.RAPIDAPI_HOST }}
         run: |
-          curl -X GET "https://api-football-v1.p.rapidapi.com/v3/fixtures" \
-            -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
-            -H "X-RapidAPI-Host: $RAPIDAPI_HOST" \
+          curl --request GET 
+          	--url https://api-football-v1.p.rapidapi.com/v3/timezone 
+	          --header 'x-rapidapi-host: api-football-v1.p.rapidapi.com' 
+	          --header 'x-rapidapi-key: 795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438'
             -o data/matches.json || echo "API fetch failed, will use fallback"
 
       # الخطوة المعدلة: تشغيل السكربت مباشرة بدون npm
-      - name: Generate new matches (fallback)
+        - name: Generate new matches (fallback)
         if: failure() || contains(steps.api-fetch.outcome, 'failure')
         run: |
           node scripts/generate-matches.js
