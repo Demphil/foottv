@@ -211,7 +211,7 @@ function initializeApp() {
 }
 // matches.js
 // استخدم أحد هذه الأشكال:
-import { getMatches } from '/assets/js/api/football.js';         // مسار مطلق
+import { getMatches } from 'assets/js/api/football.js';         // مسار مطلق
 
 export async function loadAndDisplayMatches() {
   try {
