@@ -147,7 +147,7 @@ function filterByDate() {
 }
 // دالة جلب وعرض المباريات من RapidAPI
 function loadMatches() {
-    fetch('https://api-football-v1.p.rapidapi.com/v3/timezone', {
+    fetch('/v2/odds/league/865927/bookmaker/5?page=2 HTTP/1.1', {
         method: 'GET',
         headers: {
             'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
