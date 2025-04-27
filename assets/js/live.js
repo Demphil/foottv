@@ -145,3 +145,90 @@ function filterByDate() {
     const dateRange = this.value;
     // تطبيق الفلترة حسب التاريخ
 }
+// دالة جلب وعرض المباريات من RapidAPI
+function loadMatches() {
+    fetch('https://api-football-v1.p.rapidapi.com/v3/timezone', {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
+            'x-rapidapi-key': 'your-api-key-here'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Log the raw data
+        
+        // التحقق من هيكل البيانات
+        if (!data.response || !Array.isArray(data.response)) {
+            throw new Error('Invalid data structure from API');
+        }
+
+        const today = new Date().toLocaleDateString();
+        const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString();
+
+        const todayMatches = data.response.filter(match => 
+            match.fixture && 
+            match.fixture.date && 
+            new Date(match.fixture.date).toLocaleDateString() === today
+        );
+
+        const tomorrowMatches = data.response.filter(match => 
+            match.fixture && 
+            match.fixture.date && 
+            new Date(match.fixture.date).toLocaleDateString() === tomorrow
+        );
+
+        // تحديث التاريخ
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('ar-EG');
+        document.getElementById('tomorrow-date').textContent = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('ar-EG');
+
+        // عرض مباريات اليوم
+        const todayContainer = document.getElementById('today-matches-container');
+        todayContainer.innerHTML = '';
+        todayMatches.forEach(match => {
+            todayContainer.innerHTML += `
+                <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
+                    <div class="teams">
+                        <span class="home-team">${match.teams.home.name}</span> vs 
+                        <span class="away-team">${match.teams.away.name}</span>
+                    </div>
+                    <div class="match-info">
+                        <span class="league">${match.league.name}</span>
+                        <span class="status">${match.fixture.status.long}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        // عرض مباريات الغد
+        const tomorrowContainer = document.getElementById('tomorrow-matches-container');
+        tomorrowContainer.innerHTML = '';
+        tomorrowMatches.forEach(match => {
+            tomorrowContainer.innerHTML += `
+                <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
+                    <div class="teams">
+                        <span class="home-team">${match.teams.home.name}</span> vs 
+                        <span class="away-team">${match.teams.away.name}</span>
+                    </div>
+                    <div class="match-info">
+                        <span class="league">${match.league.name}</span>
+                        <span class="status">${match.fixture.status.long}</span>
+                    </div>
+                </div>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('error-container').style.display = 'block';
+        document.getElementById('error-container').innerHTML = 'حدث خطأ في تحميل البيانات.';
+    });
+}
+
+// استدعاء دالة جلب المباريات عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', loadMatches);
