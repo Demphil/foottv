@@ -151,12 +151,17 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const tableBody = document.querySelector('#matches-table tbody');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const noDataMessage = document.getElementById('no-data-message');
+    const tableBody = document.querySelector('#matches-table tbody');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const noDataMessage = document.getElementById('no-data-message');
 
-            loadMatchesData({ tableBody, loadingSpinner, noDataMessage });
-        });
+    if (!tableBody || !loadingSpinner || !noDataMessage) {
+        console.error('عناصر DOM غير موجودة.');
+        return;
+    }
+
+    loadMatchesData({ tableBody, loadingSpinner, noDataMessage });
+});
     </script>
     <script type="module" src="assets/js/matches.js"></script>
 </body>
