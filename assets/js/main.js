@@ -28,18 +28,30 @@ async function fetchMatches() {
 }
 
 // دالة لعرض المباريات في الواجهة
-async function loadMatchesData() {
-  const container = document.getElementById('highlights-container');
-  if (!container) return;
+async function loadMatchesData({ tableBody, loadingSpinner, noDataMessage }) {
+    try {
+        showLoading(true, loadingSpinner, noDataMessage);
 
-  try {
-    const matches = await fetchMatches();
-    const validMatches = validateDates(matches);
+        const response = await fetch('data/matches.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-    if (validMatches.length === 0) {
-      container.innerHTML = '<div class="no-matches">لا توجد مباريات حالية</div>';
-      return;
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Response is not JSON');
+        }
+
+        const data = await response.json();
+        renderMatches(data.response || [], tableBody, noDataMessage);
+
+    } catch (error) {
+        console.error('فشل تحميل البيانات:', error.message || error);
+        showError(noDataMessage, 'حدث خطأ أثناء جلب بيانات المباريات');
+    } finally {
+        showLoading(false, loadingSpinner);
     }
+}
 
     container.innerHTML = validMatches.map(match => `
       <div class="match-card">
