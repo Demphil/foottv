@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
   debugOutput.textContent += 'جاري تهيئة الصفحة...\n';
   
   // تسجيل حالة الاتصال
-  fetch('https://api.example.com/ping')
+  fetch('https://api-football-v1.p.rapidapi.com/v3/timezone')
     .then(response => {
       debugOutput.textContent += 'الاتصال بالسيرفر ناجح\n';
     })
