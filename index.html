@@ -3,244 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية - تابع أهم المباريات والملخصات وأحدث الأخبار">
-    <meta name="keywords" content="مباريات مباشرة, كرة قدم, أخبار كرة القدم, ملخصات مباريات, مشاهدة مباريات">
-    <meta name="author" content="موقع بلوغر الرياضي">
-    <meta property="og:title" content="بلوغر - البث المباشر للمباريات وأخبار كرة القدم">
-    <meta property="og:description" content="شاهد أهم المباريات المباشرة وملخصات المباريات وأحدث أخبار كرة القدم">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.example.com">
-    <meta property="og:image" content="https://www.example.com/images/logo.jpg">
-    <meta name="robots" content="index, follow">
-    <link rel="icon" href="assets/images/favicon.ico.jpg" type="image/x-icon">
-    <title>البث المباشر للمباريات وأخبار كرة القدم</title>
+    <meta name="description" content="موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم">
+    <meta name="keywords" content="مباريات مباشرة, كرة قدم, أخبار كرة القدم">
+    <title>جدول مباريات اليوم</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+        header {
+            background-color: #004c91;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .matches-section {
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .section-header {
+            background-color: #004c91;
+            color: #fff;
+            padding: 10px;
+            font-size: 18px;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+        }
+        .no-data-message {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        .matches-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .matches-table th, .matches-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .matches-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <a href="index.html">
-                    <img src="images/logo.png" alt="بلوغر - البث المباشر للمباريات">
-                    <span>news</span>
-                </a>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="matches.html" class="active"><i class="fas fa-tv"></i> المباريات المباشرة</a></li>
-                    <li><a href="news.html"><i class="fas fa-newspaper"></i> أخبار كرة القدم</a></li>
-                </ul>
-            </nav>
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
+    <header>
+        <h1>جدول مباريات اليوم</h1>
     </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>تابع أهم المباريات المباشرة وأحدث أخبار كرة القدم</h1>
-            <p>موقع بلوغر يقدم لك تغطية شاملة لأهم المباريات والبطولات العالمية</p>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Today's Matches Section -->
-            <section id="today-matches" class="matches-section">
-                <div class="section-header">
-                    <h2><i class="far fa-calendar-alt"></i> مباريات اليوم</h2>
-                    <span class="date-display" id="today-date"></span>
-                </div>
-                <div class="matches-container" id="today-matches-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                    <div id="error-container" style="display: none;"></div>
-                </div>
-            </section>
-
-            <!-- Tomorrow's Matches Section -->
-            <section id="tomorrow-matches" class="matches-section">
-                <div class="section-header">
-                    <h2><i class="far fa-calendar-check"></i> مباريات الغد</h2>
-                    <span class="date-display" id="tomorrow-date"></span>
-                </div>
-                <div class="matches-container" id="tomorrow-matches-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                </div>
-            </section>
-
-            <!-- Match Highlights Section -->
-            <section id="highlights" class="highlights-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-play-circle"></i> ملخصات المباريات اليوم</h2>
-                </div>
-                <div class="highlights-container" id="highlights-container">
-                    <!-- سيتم ملؤها بواسطة JavaScript -->
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section about">
-                    <div class="logo">
-                        <img src="assets/images/logo.png" alt="بلوغر - البث المباشر للمباريات">
-                        <span>بلوغر</span>
-                    </div>
-                    <p>موقع متخصص في بث المباريات المباشرة وأخبار كرة القدم العالمية. نقدم تغطية شاملة لأهم البطولات والمباريات.</p>
-                </div>
-                <div class="footer-section links">
-                    <h3>روابط سريعة</h3>
-                    <ul>
-                        <li><a href="matches.html">المباريات المباشرة</a></li>
-                        <li><a href="news.html">أخبار كرة القدم</a></li>
-                        <li><a href="highlights.html">ملخصات المباريات</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section contact">
-                    <h3>تواصل معنا</h3>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> info@blogger.com</li>
-                        <li><i class="fas fa-phone"></i> +666</li>
-                    </ul>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
+    <div class="container">
+        <section class="matches-section">
+            <div class="section-header">المباريات</div>
+            <div id="loading-spinner" class="loading-spinner" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> جاري تحميل البيانات...
             </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; 2025 Foot Tv جميع الحقوق محفوظة.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Video Modal -->
-    <div class="video-modal" id="videoModal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="video-container">
-                <iframe id="videoFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-            </div>
-        </div>
+            <div id="no-data-message" class="no-data-message" style="display: none;">لا توجد مباريات متاحة حالياً.</div>
+            <table id="matches-table" class="matches-table">
+                <thead>
+                    <tr>
+                        <th>الفريق المضيف</th>
+                        <th>الفريق الزائر</th>
+                        <th>الدوري</th>
+                        <th>التوقيت</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
     </div>
 
     <script>
-        // دالة جلب وعرض المباريات من RapidAPI
-        function loadMatches() {
-           fetch('https://api-football-v1.p.rapidapi.com/v3/timezone', {
-  method: 'GET',
-  headers: {
-    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com',
-    'x-rapidapi-key': 'your-api-key-here'
-  }
-})
-.then(response => {
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-})
-.then(data => {
-  console.log(data); // Log the raw data
-  
-  // Make sure data.response exists and is an array
-  if (!data.response || !Array.isArray(data.response)) {
-    throw new Error('Invalid data structure from API');
-  }
+        async function loadMatchesData({ tableBody, loadingSpinner, noDataMessage }) {
+            try {
+                showLoading(true, loadingSpinner, noDataMessage);
 
-  const today = new Date().toLocaleDateString();
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString();
+                const response = await fetch('data/matches.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-  const todayMatches = data.response.filter(match => 
-    match.fixture && 
-    match.fixture.date && 
-    new Date(match.fixture.date).toLocaleDateString() === today
-  );
+                const contentType = response.headers.get('Content-Type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON');
+                }
 
-  const tomorrowMatches = data.response.filter(match => 
-    match.fixture && 
-    match.fixture.date && 
-    new Date(match.fixture.date).toLocaleDateString() === tomorrow
-  );
+                const data = await response.json();
+                renderMatches(data.response || [], tableBody, noDataMessage);
 
-  // Now you can use todayMatches and tomorrowMatches
-  console.log("Today's matches:", todayMatches);
-  console.log("Tomorrow's matches:", tomorrowMatches);
-  
-  // Return the filtered data if needed for further processing
-  return { todayMatches, tomorrowMatches };
-})
-.catch(error => console.error('Error:', error));
-            .then(response => response.json())
-            .then(data => {
-                const todayMatches = data.response.filter(match => new Date(match.fixture.date).toLocaleDateString() === new Date().toLocaleDateString());
-                const tomorrowMatches = data.response.filter(match => new Date(match.fixture.date).toLocaleDateString() === new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString());
+            } catch (error) {
+                console.error('فشل تحميل البيانات:', error.message || error);
+                showError(noDataMessage, 'حدث خطأ أثناء جلب بيانات المباريات');
+            } finally {
+                showLoading(false, loadingSpinner);
+            }
+        }
 
-                // تحديث التاريخ
-                document.getElementById('today-date').textContent = new Date().toLocaleDateString('ar-EG');
-                document.getElementById('tomorrow-date').textContent = new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('ar-EG');
+        function showLoading(show, loadingSpinner, noDataMessage) {
+            loadingSpinner.style.display = show ? 'block' : 'none';
+            if (show) noDataMessage.style.display = 'none';
+        }
 
-                // عرض مباريات اليوم
-                const todayContainer = document.getElementById('today-matches-container');
-                todayContainer.innerHTML = '';
-                todayMatches.forEach(match => {
-                    todayContainer.innerHTML += `
-                        <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
-                            <div class="teams">
-                                <span class="home-team">${match.teams.home.name}</span> vs 
-                                <span class="away-team">${match.teams.away.name}</span>
-                            </div>
-                            <div class="match-info">
-                                <span class="league">${match.league.name}</span>
-                                <span class="status">${match.fixture.status.long}</span>
-                            </div>
-                        </div>
-                    `;
-                });
+        function showError(noDataMessage, message) {
+            noDataMessage.style.display = 'block';
+            noDataMessage.textContent = message;
+        }
 
-                // عرض مباريات الغد
-                const tomorrowContainer = document.getElementById('tomorrow-matches-container');
-                tomorrowContainer.innerHTML = '';
-                tomorrowMatches.forEach(match => {
-                    tomorrowContainer.innerHTML += `
-                        <div class="match-card ${match.fixture.status.short === 'LIVE' ? 'live' : ''}">
-                            <div class="teams">
-                                <span class="home-team">${match.teams.home.name}</span> vs 
-                                <span class="away-team">${match.teams.away.name}</span>
-                            </div>
-                            <div class="match-info">
-                                <span class="league">${match.league.name}</span>
-                                <span class="status">${match.fixture.status.long}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            })
-            .catch(error => {
-                document.getElementById('error-container').style.display = 'block';
-                document.getElementById('error-container').innerHTML = 'حدث خطأ في تحميل البيانات.';
+        function renderMatches(matches, tableBody, noDataMessage) {
+            tableBody.innerHTML = '';
+            if (matches.length === 0) {
+                noDataMessage.style.display = 'block';
+                return;
+            }
+
+            noDataMessage.style.display = 'none';
+            matches.forEach(match => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${match.teams.home.name}</td>
+                    <td>${match.teams.away.name}</td>
+                    <td>${match.league.name}</td>
+                    <td>${new Date(match.fixture.date).toLocaleTimeString('ar-EG')}</td>
+                `;
+                tableBody.appendChild(row);
             });
         }
 
-        // استدعاء دالة جلب المباريات عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', loadMatches);
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.querySelector('#matches-table tbody');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const noDataMessage = document.getElementById('no-data-message');
+
+            loadMatchesData({ tableBody, loadingSpinner, noDataMessage });
+        });
     </script>
-     <script src="assets/js/main.js"></script>
-<script src="assets/js/matches.js"></script>
-<script src="assets/js/live.js"></script>
-   
+    <script type="module" src="assets/js/live.js"></script>
 </body>
 </html>
