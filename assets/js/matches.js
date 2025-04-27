@@ -209,6 +209,27 @@ const MatchApp = {
 function initializeApp() {
     MatchApp.init();
 }
+// matches.js
+import { getMatches } from './football.js';
+
+export async function loadAndDisplayMatches() {
+  try {
+    const matches = await getMatches();
+    const matchesContainer = document.getElementById('matches-container');
+    
+    matchesContainer.innerHTML = matches.map(match => `
+      <div class="match-card">
+        <h3>${match.home_team.name} vs ${match.away_team.name}</h3>
+        <p>النتيجة: ${match.score.home} - ${match.score.away}</p>
+      </div>
+    `).join('');
+  } catch (error) {
+    console.error('فشل تحميل المباريات:', error);
+  }
+}
+
+// استدعاء الدالة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', loadAndDisplayMatches);
 
 // جعل الكائن متاحًا عالميًا للاستدعاء من HTML
 window.MatchApp = MatchApp;
