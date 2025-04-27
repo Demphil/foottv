@@ -1,6 +1,6 @@
 // Config - استبدل بالقيم الصحيحة
-const API_URL = "https://api-football-v1.p.rapidapi.com/v3/fixtures";
-const API_KEY = "your-api-key"; // استبدل بمفتاحك
+const API_URL = "https://rapidapi.com/";
+const API_KEY = "795f377634msh4be097ebbb6dce3p1bf238jsn583f1b9cf438"; // استبدل بمفتاحك
 const API_HOST = "api-football-v1.p.rapidapi.com";
 
 async function fetchMatches() {
