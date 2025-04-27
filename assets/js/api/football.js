@@ -102,9 +102,3 @@ export const getLeagueMatches = async (leagueId) => {
     const matches = await getMatches();
     return matches.filter(match => match.league_id === leagueId);
 };
-
-/** تحديث الوضع التجريبي */
-export const setTestMode = (isActive) => {
-    CONFIG.TEST_MODE = isActive;
-    if (isActive) console.warn('تم تفعيل الوضع التجريبي');
-};
